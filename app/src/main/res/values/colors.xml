@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- 메인 컬러 -->
+    <color name="main_skyblue">#C5F1F6</color>
+    <color name="main_mint">#B9F5CE</color>
+
+    <!-- 앱 전체 배경색 -->
+    <color name="black_primary">#1B1B1B</color>
+
+    <!-- 챗봇 배경 or 글자 색깔 -->
+    <color name="surface">#1E1E1E</color>
+    <color name="text_primary">#F6F6F6</color>
+
+    <!-- 로그인  -->
+    <color name="text_secondary">#A8A8A8</color>
 </resources>
