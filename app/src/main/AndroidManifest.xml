@@ -8,19 +8,23 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.Inviguard"
         tools:targetApi="31">
-        <activity
-            android:name=".MainActivity"
+        <!-- 스플래시 액티비티가 첫 화면 -->
+        <activity android:name=".SplashActivity"
+            android:theme="@style/Theme.Inviguard.Splash"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- 여러 액티비티들 설정 -->
+        <activity android:name=".MainActivity" />
+
     </application>
 
 </manifest>

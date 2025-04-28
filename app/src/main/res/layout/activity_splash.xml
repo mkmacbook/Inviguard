@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_splash"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 반응형 구현을 위해
+    1) 세로 0.385% 지점에 Guideline 추가 (332-24(상태바))/800
+    -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.385" />
+
+    <!-- 아이콘 로고 반응형 구현
+     1) 85 / (800-24) = 0.10953 (세로 비율)
+     2) H,85:71.36 (세로 기준 이미지 비율 유지)
+     -->
+    <ImageView
+        android:id="@+id/icon_logo"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="icon_logo"
+        android:src="@drawable/icon_logo"
+        app:layout_constraintTop_toTopOf="@id/guideline_top"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.10953"
+        app:layout_constraintDimensionRatio="H,85:71.36" />
+
+    <!-- 워터마크 로고
+    1) 31.95 / (800-24) ≈ 0.04117
+    2) H,31.95:136 (이미지 비율 유지)
+    -->
+    <ImageView
+        android:id="@+id/watermark_logo"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:contentDescription="watermark_logo"
+        android:src="@drawable/watermark_logo_white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/icon_logo"
+        app:layout_constraintHeight_percent="0.04117"
+        app:layout_constraintDimensionRatio="H,31.95:136" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
