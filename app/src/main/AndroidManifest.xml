@@ -7,7 +7,7 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="인비가드"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.Inviguard"
@@ -23,6 +23,7 @@
         </activity>
 
         <!-- 여러 액티비티들 설정 -->
+        <activity android:name=".LoginActivity" />
         <activity android:name=".MainActivity" />
 
     </application>

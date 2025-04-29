@@ -16,8 +16,8 @@ public class SplashActivity extends Activity {
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
-                // 2초 후 MainActivity로 이동
-                Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                // 2초 후 LoginActivity로 이동
+                Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
             }
