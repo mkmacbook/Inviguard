@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 상단바 (뒤로가기, 로고, 유저 아이콘) -->
+    <ImageView
+        android:id="@+id/back"
+        android:layout_width="0dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/left"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="100dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/watermark_logo_white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/user"
+        android:layout_width="0dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/user"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- "분석 진행 중" 텍스트 -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_y21"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.21" />
+
+    <TextView
+        android:id="@+id/text_analyzing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="분석 진행 중"
+        android:textSize="24sp"
+        android:fontFamily="@font/roboto_semibold"
+        android:textColor="@color/text_primary"
+        app:layout_constraintTop_toTopOf="@id/guideline_y21"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 로딩바 -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_y29"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.288" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/progress_loading"
+        android:layout_width="145dp"
+        android:layout_height="145dp"
+        android:indeterminate="true"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_fileName="spinner.json"
+        app:layout_constraintTop_toTopOf="@id/guideline_y29"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- AI가 분석 중이에요 -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_y51"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.515" />
+
+    <TextView
+        android:id="@+id/text_ai_analyzing"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_medium"
+        android:gravity="center"
+        android:text="AI가 분석 중이에요"
+        android:textColor="@color/main_skyblue"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guideline_y51" />
+
+    <!-- 분석에는 약 1분 정도 소요 -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_y56"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.56" />
+
+    <TextView
+        android:id="@+id/text_oneminute"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/text_primary"
+        android:fontFamily="@font/roboto_light"
+        android:textSize="14sp"
+        android:lineHeight="22dp"
+        android:text="분석에는 약 1분 정도 소요됩니다.\n 분석이 완료되면 결과를 바로 알려드릴게요."
+        app:layout_constraintTop_toTopOf="@id/guideline_y56"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 박스 -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_y67"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.67" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="328dp"
+        android:layout_height="120dp"
+        app:cardCornerRadius="10dp"
+        app:cardBackgroundColor="@color/surface"
+        app:cardElevation="0dp"
+        android:layout_margin="0dp"
+        app:layout_constraintTop_toTopOf="@id/guideline_y67"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/text_tip_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📌 Tip"
+                android:textSize="18sp"
+                android:gravity="center"
+                android:fontFamily="@font/roboto_semibold"
+                android:textColor="@color/text_primary" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="15dp" />
+
+            <TextView
+                android:id="@+id/text_tip_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="제출하신 내용은 안전하게 처리됩니다.\n객관적인 사실을 바탕으로 정확하게 분석해드려요."
+                android:textSize="14sp"
+                android:lineHeight="22dp"
+                android:gravity="center"
+                android:fontFamily="@font/roboto_medium"
+                android:textColor="@color/text_primary" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -25,6 +25,8 @@
         <!-- 여러 액티비티들 설정 -->
         <activity android:name=".LoginActivity" />
         <activity android:name=".MainActivity" />
+        <activity android:name=".AnalyzingActivity" />
+        <activity android:name=".ResultActivity" />
 
     </application>
 

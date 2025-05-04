@@ -26,7 +26,7 @@ public class LoginActivity extends Activity {
                 String inputPw = pwEditText.getText().toString();
 
                 if (inputId.equals("inviguard") && inputPw.equals("ieum123!")) {
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, AnalyzingActivity.class);
                     startActivity(intent);
                     finish();
                 } else {
