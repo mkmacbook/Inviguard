@@ -1,0 +1,109 @@
+<!-- res/layout/dialog_proceed_report.xml -->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/dialog_root"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/gradient_stroke_rounded"
+    android:layout_width="300dp"
+    android:layout_height="250dp"
+    android:layout_gravity="center">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_x"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.05" />
+
+    <ImageView
+        android:id="@+id/iv_close"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="10dp"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        app:tint="@android:color/white"
+        app:layout_constraintTop_toTopOf="@id/guide_x"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_dialog_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.2" />
+
+        <TextView
+            android:id="@+id/dialog_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="신고를 진행하시겠습니까?"
+            android:textSize="18sp"
+            android:fontFamily="@font/roboto_semibold"
+            android:textColor="@android:color/white"
+            android:gravity="center"
+            app:layout_constraintTop_toTopOf="@id/guide_dialog_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_dialog_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.41" />
+
+        <TextView
+            android:id="@+id/dialog_message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="제출하신 내용은 HR팀으로 전달되어\n처리가 진행됩니다."
+            android:textSize="14sp"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="@color/text_primary"
+            android:gravity="center"
+            app:layout_constraintTop_toTopOf="@id/guide_dialog_message"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_dialog_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.688" />
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_cancel"
+        android:layout_width="103dp"
+        android:layout_height="40dp"
+        android:background="@drawable/gradient_stroke_rounded"
+        android:text="돌아가기"
+        android:textColor="@color/text_primary"
+        android:textSize="14sp"
+        android:fontFamily="@font/roboto_semibold"
+        app:layout_constraintTop_toTopOf="@id/guide_dialog_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_confirm"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        tools:ignore="TouchTargetSizeCheck"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_confirm"
+        android:layout_width="103dp"
+        android:layout_height="40dp"
+        android:background="@drawable/gradient_button"
+        android:text="신고하기"
+        android:textColor="@android:color/black"
+        android:textSize="14sp"
+        android:fontFamily="@font/roboto_semibold"
+        app:layout_constraintTop_toTopOf="@id/guide_dialog_button"
+        app:layout_constraintStart_toEndOf="@id/btn_cancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="17dp"
+        tools:ignore="TouchTargetSizeCheck"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

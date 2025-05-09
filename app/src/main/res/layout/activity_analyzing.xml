@@ -52,6 +52,7 @@
         android:textSize="24sp"
         android:fontFamily="@font/roboto_semibold"
         android:textColor="@color/text_primary"
+        android:autoSizeTextType="uniform"
         app:layout_constraintTop_toTopOf="@id/guideline_y21"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -93,6 +94,7 @@
         android:text="AI가 분석 중이에요"
         android:textColor="@color/main_skyblue"
         android:textSize="18sp"
+        android:autoSizeTextType="uniform"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -116,6 +118,7 @@
         android:textSize="14sp"
         android:lineHeight="22dp"
         android:text="분석에는 약 1분 정도 소요됩니다.\n 분석이 완료되면 결과를 바로 알려드릴게요."
+        android:autoSizeTextType="uniform"
         app:layout_constraintTop_toTopOf="@id/guideline_y56"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -153,6 +156,7 @@
                 android:text="📌 Tip"
                 android:textSize="18sp"
                 android:gravity="center"
+                android:autoSizeTextType="uniform"
                 android:fontFamily="@font/roboto_semibold"
                 android:textColor="@color/text_primary" />
 
@@ -167,6 +171,7 @@
                 android:text="제출하신 내용은 안전하게 처리됩니다.\n객관적인 사실을 바탕으로 정확하게 분석해드려요."
                 android:textSize="14sp"
                 android:lineHeight="22dp"
+                android:autoSizeTextType="uniform"
                 android:gravity="center"
                 android:fontFamily="@font/roboto_medium"
                 android:textColor="@color/text_primary" />

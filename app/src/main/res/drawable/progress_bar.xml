@@ -1,0 +1,15 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 뒷배경 -->
+    <item android:id="@android:id/background">
+        <shape android:shape="rectangle">
+            <solid android:color="#E0E0E0"/>
+            <corners android:radius="50dp"/>
+        </shape>
+    </item>
+    <!-- 클립 -->
+    <item android:id="@android:id/progress">
+        <scale
+            android:drawable="@drawable/progress_fill_shape"
+            android:scaleWidth="100%"/>
+    </item>
+</layer-list>

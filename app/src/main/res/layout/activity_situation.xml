@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- 상단바 (뒤로가기, 로고, 유저 아이콘) -->
+    <ImageView
+        android:id="@+id/back"
+        android:layout_width="0dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/left"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="100dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/watermark_logo_white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/user"
+        android:layout_width="0dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/user"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <!-- "나의 신고 현황" 텍스트 -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_y20"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.20" />
+
+    <TextView
+        android:id="@+id/text_situation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="나의 신고 현황"
+        android:textSize="24sp"
+        android:fontFamily="@font/roboto_semibold"
+        android:textColor="@color/text_primary"
+        app:layout_constraintTop_toTopOf="@id/guideline_y20"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <!-- 분석 요약 (유사 사례 O/X) 텍스트 -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_y26"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.26" />
+
+    <TextView
+        android:id="@+id/text_situation2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="인비가드는 끝까지 안전하게 함께할게요"
+        android:textSize="18sp"
+        android:fontFamily="@font/roboto_medium"
+        android:textColor="@color/text_primary"
+        app:layout_constraintTop_toTopOf="@id/guideline_y26"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 박스 -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_y33"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.335" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/box_situation"
+        android:layout_width="328dp"
+        android:layout_height="145dp"
+        android:background="@drawable/bg_rounded_surface"
+        app:layout_constraintTop_toTopOf="@id/guideline_y33"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_situation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.12" />
+
+        <TextView
+            android:id="@+id/text_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="진행 단계 : "
+            android:textSize="16sp"
+            android:fontFamily="@font/roboto_semibold"
+            android:textColor="@color/text_primary"
+            app:layout_constraintTop_toTopOf="@id/guideline_situation"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="25dp" />
+
+        <TextView
+            android:id="@+id/text_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="신고 번호 : "
+            android:textSize="16sp"
+            android:fontFamily="@font/roboto_semibold"
+            android:textColor="@color/text_primary"
+            app:layout_constraintTop_toTopOf="@id/guideline_situation"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="30dp"/>
+
+        <TextView
+            android:id="@+id/text_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="접수 일시 : "
+            android:textSize="16sp"
+            android:fontFamily="@font/roboto_semibold"
+            android:textColor="@color/text_primary"
+            app:layout_constraintTop_toTopOf="@id/guideline_situation"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="60dp"/>
+
+        <TextView
+            android:id="@+id/text_completion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="예상 완료일 : "
+            android:textSize="16sp"
+            android:fontFamily="@font/roboto_semibold"
+            android:textColor="@color/text_primary"
+            app:layout_constraintTop_toTopOf="@id/guideline_situation"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="90dp"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.57"/>
+
+    <!-- 가로형 프로그레스바 -->
+    <ProgressBar
+        android:id="@+id/progress_steps"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="328dp"
+        android:layout_height="30dp"
+        android:indeterminate="false"
+        android:max="3"
+        android:progress="0"
+        android:progressDrawable="@drawable/progress_bar"
+        app:layout_constraintTop_toTopOf="@id/guideline_progress"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- 단계 라벨 -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="4"
+        app:layout_constraintTop_toBottomOf="@id/progress_steps"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp">
+        <TextView
+            android:id="@+id/label_step0"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="접수 완료"
+            android:gravity="center"
+            android:textColor="#99FFFFFF"/>
+        <TextView
+            android:id="@+id/label_step1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="분석 완료"
+            android:gravity="center"
+            android:textColor="#99FFFFFF"/>
+        <TextView
+            android:id="@+id/label_step2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="검토 중"
+            android:gravity="center"
+            android:textColor="#99FFFFFF"/>
+        <TextView
+            android:id="@+id/label_step3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="완료"
+            android:gravity="center"
+            android:textColor="#99FFFFFF"/>
+    </LinearLayout>
+
+    <!-- 증거 추가 제출하기 버튼 -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_y83"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.838" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_additional"
+        android:layout_width="328dp"
+        android:layout_height="41dp"
+        android:text="증거 추가 제출하기"
+        android:textColor="@color/text_primary"
+        android:textSize="16sp"
+        android:fontFamily="@font/roboto_semibold"
+        android:background="@drawable/gradient_stroke_rounded"
+        app:layout_constraintTop_toTopOf="@id/guideline_y83"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="TouchTargetSizeCheck"/>
+
+    <!-- 메인으로 버튼 -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_y91"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.91" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_main"
+        android:layout_width="328dp"
+        android:layout_height="41dp"
+        android:text="메인으로"
+        android:textColor="@android:color/black"
+        android:fontFamily="@font/roboto_semibold"
+        android:textSize="16sp"
+        android:background="@drawable/gradient_button"
+        app:layout_constraintTop_toTopOf="@id/guideline_y91"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="TouchTargetSizeCheck"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

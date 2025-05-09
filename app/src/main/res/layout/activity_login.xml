@@ -44,8 +44,9 @@
         android:textColor="@color/text_primary"
         android:fontFamily="@font/roboto_semibold"
         android:textSize="24sp"
-        android:lineHeight="28dp"
+        android:lineHeight="29dp"
         android:text="사내 괴롭힘,\n이제 혼자 참지 말고\n인비가드에게 털어놔요"
+        android:autoSizeTextType="uniform"
         app:layout_constraintTop_toTopOf="@id/guideline_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

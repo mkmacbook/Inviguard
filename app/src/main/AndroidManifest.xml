@@ -8,6 +8,7 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="인비가드"
+        android:name=".MyApplication"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.Inviguard"
@@ -27,6 +28,7 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".AnalyzingActivity" />
         <activity android:name=".ResultActivity" />
+        <activity android:name=".SituationActivity" />
 
     </application>
 
