@@ -24,6 +24,8 @@
 
         <!-- 여러 액티비티들 설정 -->
         <activity android:name=".LoginActivity" />
+        <activity android:name=".ChatActivity" />
+
         <activity android:name=".MainActivity" />
 
     </application>
