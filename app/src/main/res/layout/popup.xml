@@ -1,0 +1,70 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/dialog_root"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/gradient_stroke_rounded"
+    android:layout_width="300dp"
+    android:layout_height="200dp"
+    android:layout_gravity="center">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_x"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.05" />
+
+    <ImageView
+        android:id="@+id/iv_close"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="10dp"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        app:tint="@android:color/white"
+        app:layout_constraintTop_toTopOf="@id/guide_x"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_popup_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.255" />
+
+    <TextView
+        android:id="@+id/popup_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Q. 어떤 증거가 필요할까?"
+        android:textSize="18sp"
+        android:fontFamily="@font/roboto_semibold"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        app:layout_constraintTop_toTopOf="@id/guide_popup_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_popup_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.525" />
+
+    <TextView
+        android:id="@+id/popup_subtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="A. 괴롭힘의 증거가 될 사진이나 음성녹음\n파일이 있다면 더 정확한 분석이 가능해요."
+        android:textSize="13.5sp"
+        android:fontFamily="@font/roboto_medium"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:lineHeight="20dp"
+        app:layout_constraintTop_toTopOf="@id/guide_popup_subtitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
