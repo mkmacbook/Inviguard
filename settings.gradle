@@ -1,16 +1,18 @@
 pluginManagement {
     repositories {
         google()
-        mavenCentral()
         gradlePluginPortal()
+        mavenCentral()
     }
 }
+
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT) // ← 여기 수정함
     repositories {
         google()
         mavenCentral()
     }
 }
+
 rootProject.name = "Inviguard"
-include ':app'
+include(":app")
