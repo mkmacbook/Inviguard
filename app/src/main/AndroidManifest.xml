@@ -13,6 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Inviguard"
         tools:targetApi="31">
+
         <!-- 스플래시 액티비티가 첫 화면 -->
         <activity android:name=".SplashActivity"
             android:theme="@style/Theme.Inviguard.Splash"
@@ -29,6 +30,8 @@
         <activity android:name=".AnalyzingActivity" />
         <activity android:name=".ResultActivity" />
         <activity android:name=".SituationActivity" />
+        <activity android:name=".ChatActivity" />
+
 
     </application>
 

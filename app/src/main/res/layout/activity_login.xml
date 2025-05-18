@@ -4,27 +4,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- 텍스트, 아이디/비밀번호, 버튼 가이드라인 -->
+    <!-- 텍스트, 아이디/비밀번호, 버튼 가이드라인
+   - 텍스트 Y=~0.27
+   - 아이디 Y=~0.44
+   - 비밀번호 Y=~0.53
+   - 버튼 Y=~0.87-->
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.26" />
+        app:layout_constraintGuide_percent="0.27" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.438" />
+        app:layout_constraintGuide_percent="0.44" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_pw"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.52" />
+        app:layout_constraintGuide_percent="0.53" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_button"
@@ -44,9 +48,8 @@
         android:textColor="@color/text_primary"
         android:fontFamily="@font/roboto_semibold"
         android:textSize="24sp"
-        android:lineHeight="29dp"
+        android:lineHeight="28dp"
         android:text="사내 괴롭힘,\n이제 혼자 참지 말고\n인비가드에게 털어놔요"
-        android:autoSizeTextType="uniform"
         app:layout_constraintTop_toTopOf="@id/guideline_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
