@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -26,7 +27,8 @@
 
         <!-- 여러 액티비티들 설정 -->
         <activity android:name=".LoginActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".MainBeforeActivity" />
+        <activity android:name=".MainAfterActivity" />
         <activity android:name=".AnalyzingActivity" />
         <activity android:name=".ResultActivity" />
         <activity android:name=".SituationActivity" />
