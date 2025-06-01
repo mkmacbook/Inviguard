@@ -1,7 +1,6 @@
 package com.example.inviguard;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.app.Dialog;
@@ -9,17 +8,18 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class MainBeforeActivity extends AppCompatActivity {
+public class MainBeforeActivity extends AppCompatActivity implements ChatSessionManager.MainActivityInterface{
     private TextView bubble1, bubble2, bubble3;
-    private DrawerLayout drawerLayout;
-    private ImageView menuButton;
-    private TextView menuClose;
+    private MenuBar menuBar;
+
+    private LinearLayout chatSessionListLayout;
+    private ChatSessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +28,9 @@ public class MainBeforeActivity extends AppCompatActivity {
         initViews();
         setupExistingFeatures();
         setupMenu();
+
+        sessionManager = new ChatSessionManager(this, chatSessionListLayout);
+        sessionManager.fetchSessions();
     }
 
     // UI 초기화
@@ -35,9 +38,8 @@ public class MainBeforeActivity extends AppCompatActivity {
         bubble1 = findViewById(R.id.bubble_button_1);
         bubble2 = findViewById(R.id.bubble_button_2);
         bubble3 = findViewById(R.id.bubble_button_3);
-        drawerLayout = findViewById(R.id.drawer_layout);
-        menuButton = findViewById(R.id.menu);
-        menuClose = findViewById(R.id.menu_close);
+
+        chatSessionListLayout = findViewById(R.id.chat_session_list);
     }
 
     // 팝업 기능 설정
@@ -84,39 +86,22 @@ public class MainBeforeActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    // 메뉴 설정
+    // 메뉴 설정 - MenuHelper 사용
     private void setupMenu() {
-        // 메뉴 버튼 클릭하면
-        menuButton.setOnClickListener(v -> {
-            drawerLayout.openDrawer(GravityCompat.START);
-        });
-        // 메뉴 닫기 누르면
-        menuClose.setOnClickListener(v -> {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        });
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        ImageView menuButton = findViewById(R.id.menu);
+        TextView menuClose = findViewById(R.id.menu_close);
 
-        // 오버레이 효과
-        drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                float alpha = 1.0f - (slideOffset * 0.2f);
-                View mainContent = drawerLayout.getChildAt(0);
-                mainContent.setAlpha(alpha);
-            }
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                View mainContent = drawerLayout.getChildAt(0);
-                mainContent.setAlpha(0.8f);
-            }
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                View mainContent = drawerLayout.getChildAt(0);
-                mainContent.setAlpha(1.0f);
-            }
-            @Override
-            public void onDrawerStateChanged(int newState) {
-            }
-        });
-        drawerLayout.setScrimColor(Color.parseColor("#80000000"));
+        menuBar = new MenuBar(drawerLayout, menuButton, menuClose);
+        menuBar.setupMenu();
+
+        // 메뉴가 열릴 때마다 세션 목록 새로고침
+        menuBar.setMenuBarListener(() -> sessionManager.fetchSessions());
+    }
+
+    // ChatSessionManager → runOnMain 실행 인터페이스 구현
+    @Override
+    public void runOnMain(Runnable r) {
+        runOnUiThread(r);
     }
 }

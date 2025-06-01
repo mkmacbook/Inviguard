@@ -167,6 +167,18 @@
             app:layout_constraintStart_toStartOf="@id/step2_circle"
             app:layout_constraintTop_toBottomOf="@id/divider2" />
 
+        <!-- 3단계 체크 아이콘 (기본적으로 숨김) -->
+        <ImageView
+            android:id="@+id/step3_check"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/check"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/step3_circle"
+            app:layout_constraintEnd_toEndOf="@id/step3_circle"
+            app:layout_constraintStart_toStartOf="@id/step3_circle"
+            app:layout_constraintTop_toTopOf="@id/step3_circle" />
+
         <TextView
             android:id="@+id/step3_text"
             android:layout_width="wrap_content"
@@ -198,6 +210,18 @@
             android:background="@drawable/ic_circle_stroke_mint"
             app:layout_constraintStart_toStartOf="@id/step3_circle"
             app:layout_constraintTop_toBottomOf="@id/divider3" />
+
+        <!-- 4단계 체크 아이콘 (기본적으로 숨김) -->
+        <ImageView
+            android:id="@+id/step4_check"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/check"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/step4_circle"
+            app:layout_constraintEnd_toEndOf="@id/step4_circle"
+            app:layout_constraintStart_toStartOf="@id/step4_circle"
+            app:layout_constraintTop_toTopOf="@id/step4_circle" />
 
         <TextView
             android:id="@+id/step4_text"
@@ -255,91 +279,6 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- 메뉴 -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/nav_view"
-        android:layout_width="280dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:background="@color/black_primary"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
-
-        <!-- 닫기 가이드라인  -->
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_top_5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.02" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_end_95"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.95" />
-
-        <TextView
-            android:id="@+id/menu_close"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?android:attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:fontFamily="@font/roboto_semibold"
-            android:padding="4dp"
-            android:text="＜"
-            android:textColor="@color/text_primary"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="@id/guideline_end_95"
-            app:layout_constraintTop_toTopOf="@id/guideline_top_5" />
-
-        <!-- 신고 내역 -->
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_12"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.12" />
-
-        <TextView
-            android:id="@+id/text_report_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:fontFamily="@font/roboto_semibold"
-            android:text="신고 내역"
-            android:textColor="@color/text_primary"
-            android:textSize="25sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/guideline_12" />
-
-        <!-- 신고 항목-->
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_19"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.195" />
-
-        <TextView
-            android:id="@+id/menu_report_1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?android:attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:fontFamily="@font/roboto_medium"
-            android:paddingStart="24dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="24dp"
-            android:paddingBottom="12dp"
-            android:text="000 대리 신고 건"
-            android:textColor="@color/text_primary"
-            android:textSize="17sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/guideline_19" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <include layout="@layout/menu_drawer" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

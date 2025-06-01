@@ -3,14 +3,12 @@ package com.example.inviguard;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -21,16 +19,17 @@ import com.google.gson.annotations.SerializedName;
 import android.widget.Toast;
 import android.util.Log;
 
-public class MainAfterActivity extends AppCompatActivity {
+public class MainAfterActivity extends AppCompatActivity implements ChatSessionManager.MainActivityInterface {
 
     private TextView mainAfterText;
     private View step1Circle, step2Circle, step3Circle, step4Circle;
-    private ImageView step1Check, step2Check;
+    private ImageView step1Check, step2Check, step3Check, step4Check;  // step3Check, step4Check 추가
     private TextView step1Text, step2Text, step3Text, step4Text;
     private View divider1, divider2, divider3;
-    private DrawerLayout drawerLayout;
-    private ImageView menuButton;
-    private TextView menuClose;
+    private MenuBar menuBar;
+    private LinearLayout chatSessionListLayout;
+    private ChatSessionManager sessionManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +39,11 @@ public class MainAfterActivity extends AppCompatActivity {
         initViews();
         // API 호출하여 상태 업데이트
         fetchStatusFromAPI();
-        //메뉴바
+        // 메뉴바
         setupMenu();
+        // 메뉴바 세션 리스트
+        sessionManager = new ChatSessionManager(this, chatSessionListLayout);
+        sessionManager.fetchSessions();
     }
 
     private void initViews() {
@@ -54,9 +56,11 @@ public class MainAfterActivity extends AppCompatActivity {
         step3Circle = findViewById(R.id.step3_circle);
         step4Circle = findViewById(R.id.step4_circle);
 
-        // 체크 아이콘들
+        // 체크 아이콘들 (step3Check, step4Check 추가)
         step1Check = findViewById(R.id.step1_check);
         step2Check = findViewById(R.id.step2_check);
+        step3Check = findViewById(R.id.step3_check);
+        step4Check = findViewById(R.id.step4_check);
 
         // 단계별 텍스트들
         step1Text = findViewById(R.id.step1_text);
@@ -69,10 +73,8 @@ public class MainAfterActivity extends AppCompatActivity {
         divider2 = findViewById(R.id.divider2);
         divider3 = findViewById(R.id.divider3);
 
-        //메뉴바
-        drawerLayout = findViewById(R.id.drawer_layout);
-        menuButton = findViewById(R.id.menu);
-        menuClose = findViewById(R.id.menu_close);
+        // 메뉴바 세션 리스트
+        chatSessionListLayout = findViewById(R.id.chat_session_list);
     }
 
     // API 호출 부분
@@ -119,7 +121,6 @@ public class MainAfterActivity extends AppCompatActivity {
         int currentStep = determineStepFromStatus(statusMessage);
         updateStepProgress(currentStep);
     }
-
 
     // 상태 메시지를 분석해서 현재 단계를 판단하는 메서드
     private int determineStepFromStatus(String statusMessage) {
@@ -194,6 +195,8 @@ public class MainAfterActivity extends AppCompatActivity {
 
         step1Check.setVisibility(View.GONE);
         step2Check.setVisibility(View.GONE);
+        step3Check.setVisibility(View.GONE);
+        step4Check.setVisibility(View.GONE);
 
         setTextSecondary(step1Text);
         setTextSecondary(step2Text);
@@ -220,10 +223,12 @@ public class MainAfterActivity extends AppCompatActivity {
                 break;
             case 3:
                 step3Circle.setBackgroundResource(R.drawable.ic_circle_stroke_skyblue);
+                step3Check.setVisibility(View.VISIBLE);
                 setTextSecondary(step3Text);
                 break;
             case 4:
                 step4Circle.setBackgroundResource(R.drawable.ic_circle_stroke_skyblue);
+                step4Check.setVisibility(View.VISIBLE);
                 setTextSecondary(step4Text);
                 break;
         }
@@ -244,10 +249,12 @@ public class MainAfterActivity extends AppCompatActivity {
                 break;
             case 3:
                 step3Circle.setBackgroundResource(R.drawable.ic_circle_filled_mint);
+                step3Check.setVisibility(View.GONE);
                 setTextPrimary(step3Text);
                 break;
             case 4:
                 step4Circle.setBackgroundResource(R.drawable.ic_circle_filled_mint);
+                step4Check.setVisibility(View.GONE);
                 setTextPrimary(step4Text);
                 break;
         }
@@ -273,7 +280,6 @@ public class MainAfterActivity extends AppCompatActivity {
         textView.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
         textView.setTypeface(ResourcesCompat.getFont(this, R.font.roboto_medium));
     }
-
 
     // API 응답을 위한 데이터 모델 클래스
     public static class ReportStatusResponse {
@@ -307,43 +313,21 @@ public class MainAfterActivity extends AppCompatActivity {
         updateStatusUI("--", "...");
     }
 
+    // 메뉴 설정 - MenuBar 사용
     private void setupMenu() {
-        // 햄버거 버튼 클릭 → 메뉴 열기
-        menuButton.setOnClickListener(v -> {
-            drawerLayout.openDrawer(GravityCompat.START);
-        });
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        ImageView menuButton = findViewById(R.id.menu);
+        TextView menuClose = findViewById(R.id.menu_close);
 
-        // 닫기 버튼 클릭 → 메뉴 닫기
-        menuClose.setOnClickListener(v -> {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        });
+        menuBar = new MenuBar(drawerLayout, menuButton, menuClose);
+        menuBar.setupMenu();
 
-        // 드로어 애니메이션 처리
-        drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                float alpha = 1.0f - (slideOffset * 0.2f);
-                View mainContent = drawerLayout.getChildAt(0);
-                mainContent.setAlpha(alpha);
-            }
+        // 메뉴 열릴 때 세션 목록 갱신
+        menuBar.setMenuBarListener(() -> sessionManager.fetchSessions());
+    }
 
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                View mainContent = drawerLayout.getChildAt(0);
-                mainContent.setAlpha(0.8f);
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                View mainContent = drawerLayout.getChildAt(0);
-                mainContent.setAlpha(1.0f);
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-            }
-        });
-
-        drawerLayout.setScrimColor(Color.parseColor("#80000000"));
+    @Override
+    public void runOnMain(Runnable r) {
+        runOnUiThread(r);
     }
 }

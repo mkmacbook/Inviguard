@@ -3,6 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -13,6 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.Inviguard"
+        android:networkSecurityConfig="@xml/network_security_config"
         tools:targetApi="31">
 
         <!-- 스플래시 액티비티가 첫 화면 -->
@@ -32,9 +39,8 @@
         <activity android:name=".AnalyzingActivity" />
         <activity android:name=".ResultActivity" />
         <activity android:name=".SituationActivity" />
-        <activity android:name=".ChatActivity" />
-
-
+        <activity android:name=".ChatActivity"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

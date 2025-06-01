@@ -15,7 +15,7 @@ android {
         versionName "1.0"
 
         //백엔드 url 추가
-        buildConfigField "String", "BASE_URL", "\"http://192.168.0.5:3000/\""
+        buildConfigField "String", "BASE_URL", "\"http://10.0.2.2:3000/\""
     }
 
     buildTypes {
@@ -34,7 +34,6 @@ android {
         jvmTarget = '17'
     }
 
-    // ✅ viewBinding 추가
     buildFeatures {
         viewBinding true
         buildConfig true //BuildConfig 기능 활성화
@@ -56,8 +55,7 @@ dependencies {
 
     implementation 'com.google.android.material:material:1.10.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-
-    // ✅ RecyclerView 추가
+    implementation 'com.android.volley:volley:1.2.1'
     implementation 'androidx.recyclerview:recyclerview:1.3.2'
 
     // Retrofit
@@ -66,4 +64,8 @@ dependencies {
 
     // Gson
     implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+
+    // 👉 OkHttp 추가
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
 }
