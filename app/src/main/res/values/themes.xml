@@ -10,6 +10,7 @@
 
     <!-- SplashActivity 전용 테마 -->
     <style name="Theme.Inviguard.Splash" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="buttonStyle">@style/Widget.AppCompat.Button</item>
         <item name="android:windowBackground">@color/black_primary</item> <!-- 배경 통일 -->
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>

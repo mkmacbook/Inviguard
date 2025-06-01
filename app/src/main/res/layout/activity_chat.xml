@@ -6,83 +6,115 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- 상단바 (뒤로가기, 로고, 유저 아이콘) -->
-    <ImageView
-        android:id="@+id/back"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:src="@drawable/left"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageView
-        android:id="@+id/logo"
-        android:layout_width="100dp"
-        android:layout_height="24dp"
-        android:layout_marginTop="16dp"
-        android:src="@drawable/watermark_logo_white"
+    <!-- ✅ 상단 InviGuard 로고 + 프로필 아이콘 -->
+    <RelativeLayout
+        android:id="@+id/chat_header"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="24dp"
+        android:paddingBottom="16dp"
+        android:background="#000000"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <ImageView
-        android:id="@+id/user"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
-        android:src="@drawable/user"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <ImageView
+            android:id="@+id/logoImage"
+            android:layout_width="120dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="4dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/watermark_logo_white"
+            android:contentDescription="InviGuard 로고"
+            android:scaleType="fitCenter" />
 
-    <!-- 채팅 리스트 -->
+        <ImageView
+            android:id="@+id/userIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_profile"
+            app:tint="#FFFFFF"
+            android:contentDescription="프로필 아이콘" />
+
+        <ImageButton
+            android:id="@+id/back_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_arrow_back"
+            android:background="@android:color/transparent"
+            android:contentDescription="뒤로가기"
+            app:tint="#FFFFFF"/>
+
+    </RelativeLayout>
+
+    <!-- ✅ 채팅 메시지 리스트 -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:padding="8dp"
         android:clipToPadding="false"
-        android:scrollbars="vertical"
-        app:layout_constraintTop_toBottomOf="@+id/logo"
-        app:layout_constraintBottom_toTopOf="@+id/message_container"
+        android:paddingTop="16dp"
+        android:contentDescription="채팅 메시지 목록"
+        android:background="#000000"
+        app:layout_constraintTop_toBottomOf="@id/chat_header"
+        app:layout_constraintBottom_toTopOf="@id/inputLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 입력창 컨테이너 -->
+    <!-- ✅ 입력창 (EditText와 버튼을 하나의 테두리 안에 넣기) -->
     <LinearLayout
-        android:id="@+id/message_container"
+        android:id="@+id/inputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="8dp"
-        android:background="#1F1F1F"
+        android:background="#000000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <EditText
-            android:id="@+id/edit_text"
-            android:hint="메시지를 입력하세요"
+        <!-- EditText + 전송버튼을 감싸는 배경 테두리 ViewGroup -->
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:padding="12dp"
-            android:textColor="#ffffff"
-            android:background="#333333"
-            android:textColorHint="#AAAAAA"
-            android:textSize="14sp"
-            tools:ignore="TouchTargetSizeCheck"/>
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:background="@drawable/gradient_stroke_rounded"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="8dp"
+            android:gravity="center_vertical">
 
-        <ImageButton
-            android:id="@+id/button_send"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_send_vector"
-            android:background="@android:color/transparent"
-            android:contentDescription="전송 버튼"
-            app:tint="#FFFFFF" />
+            <EditText
+                android:id="@+id/edit_text"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:minHeight="48dp"
+                android:hint="이음에게 고민상담하기"
+                android:textColor="#ffffff"
+                android:textColorHint="#AAAAAA"
+                android:background="@android:color/transparent"
+                android:textSize="14sp"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <ImageButton
+                android:id="@+id/button_send"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:src="@drawable/ic_send_vector"
+                android:background="@android:color/transparent"
+                app:tint="#ffffff"
+                android:contentDescription="전송" />
+        </LinearLayout>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

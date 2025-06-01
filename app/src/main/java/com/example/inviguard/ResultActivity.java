@@ -48,7 +48,7 @@ public class ResultActivity extends AppCompatActivity {
 
         //“메인으로” 버튼 클릭 시 메인 화면으로
         buttonMain.setOnClickListener(v -> {
-            Intent intent = new Intent(ResultActivity.this, MainActivity.class);
+            Intent intent = new Intent(ResultActivity.this, MainBeforeActivity.class);
             startActivity(intent);
             finish();
         });

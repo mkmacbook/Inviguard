@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 메인 컨텐츠 -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- 상단바 (뒤로가기, 로고, 유저 아이콘) -->
+        <ImageView
+            android:id="@+id/menu"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/menu"
+            android:contentDescription="메뉴 열기"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?android:attr/selectableItemBackground"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="100dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/watermark_logo_white"
+            android:contentDescription="인비가드 로고"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <ImageView
+            android:id="@+id/user"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/user"
+            android:contentDescription="사용자 프로필"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- 텍스트 -->
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_y21"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.21" />
+
+        <TextView
+            android:id="@+id/login_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/text_primary"
+            android:fontFamily="@font/roboto_semibold"
+            android:textSize="24sp"
+            android:lineHeight="29dp"
+            android:text="나만의 익명 상담사\n인비가드 시작하는 법\n알아보기"
+            android:autoSizeTextType="uniform"
+            app:layout_constraintTop_toTopOf="@id/guideline_y21"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- 메인 이미지 -->
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_y40"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.405" />
+
+        <ImageView
+            android:id="@+id/main_img"
+            android:layout_width="233dp"
+            android:layout_height="184dp"
+            android:src="@drawable/main_illust"
+            app:layout_constraintTop_toTopOf="@id/guideline_y40"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.3"/>
+
+        <!-- 왼쪽 말풍선 버튼 -->
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_y37"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.37" />
+
+        <TextView
+            android:id="@+id/bubble_button_1"
+            android:layout_width="129dp"
+            android:layout_height="25dp"
+            android:text="어떤 증거가 필요할까?"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:background="@drawable/bg_bubble_left"
+            android:textColor="@android:color/black"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintTop_toTopOf="@id/guideline_y37"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.1"
+            tools:ignore="TouchTargetSizeCheck"/>
+
+        <!-- 오른쪽 말풍선 버튼 -->
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_y405"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.405" />
+
+        <TextView
+            android:id="@+id/bubble_button_2"
+            android:layout_width="96dp"
+            android:layout_height="40dp"
+            android:text="익명보장이\n되나요?"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:background="@drawable/bg_bubble_right"
+            android:textColor="@android:color/black"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintTop_toTopOf="@id/guideline_y405"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.9"
+            tools:ignore="TouchTargetSizeCheck"/>
+
+        <!-- 아래쪽 말풍선 버튼 -->
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_y63"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.63" />
+
+        <TextView
+            android:id="@+id/bubble_button_3"
+            android:layout_width="155dp"
+            android:layout_height="25dp"
+            android:text="신고는 어떻게 진행되나요?"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:background="@drawable/bg_bubble_bottom"
+            android:textColor="@android:color/black"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintTop_toTopOf="@id/guideline_y63"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.2"
+            tools:ignore="TouchTargetSizeCheck"/>
+
+        <!-- "더 알아보기" 텍스트 -->
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_y69"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.69" />
+
+        <TextView
+            android:id="@+id/text_more"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/text_secondary"
+            android:fontFamily="@font/roboto_medium"
+            android:textSize="12sp"
+            android:text="더 알아보기"
+            android:autoSizeTextType="uniform"
+            app:layout_constraintTop_toTopOf="@id/guideline_y69"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- 버튼 유도 -->
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_y87"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.87" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/text_introduction"
+            android:layout_width="160dp"
+            android:layout_height="25dp"
+            android:text="인비가드가 안전하게 접수해 드려요"
+            android:textColor="@color/text_primary"
+            android:textSize="10sp"
+            android:fontFamily="@font/roboto_light"
+            android:background="@drawable/gradient_stroke_rounded"
+            app:layout_constraintTop_toTopOf="@id/guideline_y87"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:ignore="TouchTargetSizeCheck"/>
+
+        <!-- 버튼 -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/button_go"
+            android:layout_width="match_parent"
+            android:layout_height="57dp"
+            android:text="익명 채팅 바로가기"
+            android:textSize="20sp"
+            android:textColor="@color/surface"
+            android:fontFamily="@font/roboto_semibold"
+            android:background="@drawable/gradient_button_topcorners"
+            android:gravity="center"
+            android:padding="0dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:ignore="TouchTargetSizeCheck" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- 메뉴 -->
+    <include layout="@layout/menu_drawer" />
+
+</androidx.drawerlayout.widget.DrawerLayout>

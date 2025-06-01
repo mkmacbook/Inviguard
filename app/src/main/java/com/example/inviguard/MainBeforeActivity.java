@@ -1,6 +1,7 @@
 package com.example.inviguard;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -10,27 +11,45 @@ import android.os.Bundle;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
-
+public class MainBeforeActivity extends AppCompatActivity implements ChatSessionManager.MainActivityInterface{
     private TextView bubble1, bubble2, bubble3;
+    private MenuBar menuBar;
+
+    private LinearLayout chatSessionListLayout;
+    private ChatSessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main_before);
+        initViews();
+        setupExistingFeatures();
+        setupMenu();
 
-        // 채팅 바로가기 누르면 챗봇으로 이동
-        Button goButton = findViewById(R.id.button_go);
-        goButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, ChatActivity.class);
-            startActivity(intent);
-        });
+        sessionManager = new ChatSessionManager(this, chatSessionListLayout);
+        sessionManager.fetchSessions();
+    }
 
+    // UI 초기화
+    private void initViews() {
         bubble1 = findViewById(R.id.bubble_button_1);
         bubble2 = findViewById(R.id.bubble_button_2);
         bubble3 = findViewById(R.id.bubble_button_3);
+
+        chatSessionListLayout = findViewById(R.id.chat_session_list);
+    }
+
+    // 팝업 기능 설정
+    private void setupExistingFeatures() {
+        // 채팅 바로가기 버튼
+        Button goButton = findViewById(R.id.button_go);
+        goButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainBeforeActivity.this, ChatActivity.class);
+            startActivity(intent);
+        });
 
         bubble1.setOnClickListener(v -> showPopup(
                 "Q. 어떤 증거가 필요할까?",
@@ -49,9 +68,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showPopup(String questionText, String answerText) {
-        Dialog dialog = new Dialog(MainActivity.this);
+        Dialog dialog = new Dialog(MainBeforeActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.popup); // 팝업 레이아웃
+        dialog.setContentView(R.layout.popup);
 
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
@@ -65,5 +84,24 @@ public class MainActivity extends AppCompatActivity {
         btnClose.setOnClickListener(v -> dialog.dismiss());
 
         dialog.show();
+    }
+
+    // 메뉴 설정 - MenuHelper 사용
+    private void setupMenu() {
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        ImageView menuButton = findViewById(R.id.menu);
+        TextView menuClose = findViewById(R.id.menu_close);
+
+        menuBar = new MenuBar(drawerLayout, menuButton, menuClose);
+        menuBar.setupMenu();
+
+        // 메뉴가 열릴 때마다 세션 목록 새로고침
+        menuBar.setMenuBarListener(() -> sessionManager.fetchSessions());
+    }
+
+    // ChatSessionManager → runOnMain 실행 인터페이스 구현
+    @Override
+    public void runOnMain(Runnable r) {
+        runOnUiThread(r);
     }
 }

@@ -1,0 +1,27 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/session_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:fontFamily="@font/roboto_medium"
+        android:textColor="@color/text_primary"
+        android:textSize="17sp" />
+
+    <ImageView
+        android:id="@+id/session_delete"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_delete"
+        android:contentDescription="삭제 버튼"
+        app:tint="@color/text_primary"
+        android:padding="4dp" />
+
+</LinearLayout>

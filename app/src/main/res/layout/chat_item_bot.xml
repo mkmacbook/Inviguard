@@ -1,16 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
     android:gravity="start"
-    android:padding="8dp">
+    android:orientation="horizontal"
+    android:padding="16dp">
 
+    <!-- ✅ 챗봇 로고 (왼쪽) -->
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="30dp"
+        android:src="@drawable/icon_logo"
+        android:layout_marginEnd="8dp"
+        android:contentDescription="챗봇 로고"
+        android:gravity="center_vertical"/>
+
+    <!-- ✅ 챗봇 말풍선 -->
     <TextView
         android:id="@+id/text_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#FFFFFF"
+        android:layout_marginStart="12dp"
         android:background="@drawable/bot_message_bg"
-        android:padding="12dp"
-        android:textSize="14sp"/>
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:padding="12dp"/>
 </LinearLayout>
+
