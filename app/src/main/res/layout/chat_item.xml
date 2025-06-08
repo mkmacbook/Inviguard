@@ -45,7 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/user_message_bg"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/text_primary"
             android:padding="12dp"
             android:text="안녕하세요!" />
     </LinearLayout>

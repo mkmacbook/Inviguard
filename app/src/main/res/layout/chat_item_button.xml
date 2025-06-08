@@ -15,7 +15,7 @@
         android:background="@drawable/button_black_rounded"
         android:text="시작하기"
         android:textColor="#FFFFFF"
-        android:textStyle="bold"
+        android:fontFamily="@font/roboto_semibold"
         android:textSize="14sp"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"

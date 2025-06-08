@@ -4,54 +4,39 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/black_primary">
 
-    <!-- ✅ 상단 InviGuard 로고 + 프로필 아이콘 -->
-    <RelativeLayout
-        android:id="@+id/chat_header"
+    <ImageView
+        android:id="@+id/back"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:paddingTop="24dp"
-        android:paddingBottom="16dp"
-        android:background="#000000"
+        android:layout_height="24dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/left"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="100dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/watermark_logo_white"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <ImageView
-            android:id="@+id/logoImage"
-            android:layout_width="120dp"
-            android:layout_height="50dp"
-            android:layout_marginBottom="4dp"
-            android:layout_centerHorizontal="true"
-            android:src="@drawable/watermark_logo_white"
-            android:contentDescription="InviGuard 로고"
-            android:scaleType="fitCenter" />
+    <ImageView
+        android:id="@+id/user"
+        android:layout_width="0dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/user"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <ImageView
-            android:id="@+id/userIcon"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_profile"
-            app:tint="#FFFFFF"
-            android:contentDescription="프로필 아이콘" />
-
-        <ImageButton
-            android:id="@+id/back_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_arrow_back"
-            android:background="@android:color/transparent"
-            android:contentDescription="뒤로가기"
-            app:tint="#FFFFFF"/>
-
-    </RelativeLayout>
 
     <!-- ✅ 채팅 메시지 리스트 -->
     <androidx.recyclerview.widget.RecyclerView
@@ -61,9 +46,10 @@
         android:padding="8dp"
         android:clipToPadding="false"
         android:paddingTop="16dp"
+        android:layout_marginTop="50dp"
         android:contentDescription="채팅 메시지 목록"
-        android:background="#000000"
-        app:layout_constraintTop_toBottomOf="@id/chat_header"
+        android:background="@color/black_primary"
+        app:layout_constraintTop_toBottomOf="@id/logo"
         app:layout_constraintBottom_toTopOf="@id/inputLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -75,7 +61,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="8dp"
-        android:background="#000000"
+        android:background="@color/surface"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -97,11 +83,11 @@
                 android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:minHeight="48dp"
-                android:hint="이음에게 고민상담하기"
-                android:textColor="#ffffff"
+                android:hint="이음에게 고민상담 하기"
+                android:textColor="@color/text_primary"
                 android:textColorHint="#AAAAAA"
                 android:background="@android:color/transparent"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 tools:ignore="TouchTargetSizeCheck" />
 
             <ImageButton
