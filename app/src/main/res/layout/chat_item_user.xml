@@ -13,6 +13,11 @@
         android:layout_marginEnd="12dp"
         android:textColor="#000000"
         android:background="@drawable/user_message_bg"
-        android:padding="12dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:maxWidth="260dp"
+        android:layout_marginBottom="8dp"
         android:textSize="14sp"/>
 </LinearLayout>

@@ -15,7 +15,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<ChatMessage> messageList;
 
-    // 🔹 버튼 클릭 리스너 인터페이스
+    // 🔹 단일 버튼 클릭 리스너
     public interface OnButtonClickListener {
         void onButtonClicked(String buttonText);
     }
@@ -24,6 +24,17 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void setOnButtonClickListener(OnButtonClickListener listener) {
         this.buttonClickListener = listener;
+    }
+
+    // 🔹 파일 첨부 버튼 리스너
+    public interface OnFilePickRequestedListener {
+        void onFilePickRequested(String type); // "image" or "audio"
+    }
+
+    private OnFilePickRequestedListener filePickListener;
+
+    public void setOnFilePickRequestedListener(OnFilePickRequestedListener listener) {
+        this.filePickListener = listener;
     }
 
     public ChatAdapter(List<ChatMessage> messageList) {
@@ -48,8 +59,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else if (viewType == ChatMessage.TYPE_BUTTON) {
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_item_button, parent, false);
             return new ButtonViewHolder(view);
+        } else if (viewType == ChatMessage.TYPE_FILE_BUTTONS) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_item_file_buttons, parent, false);
+            return new FileButtonViewHolder(view);
         } else if (viewType == ChatMessage.TYPE_SPACER) {
-            // ✅ SpacerViewHolder 생성
             View spacerView = new View(parent.getContext());
             int heightInPx = (int) (32 * parent.getContext().getResources().getDisplayMetrics().density); // 32dp
             spacerView.setLayoutParams(new ViewGroup.LayoutParams(
@@ -72,17 +85,15 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ((BotViewHolder) holder).textView.setText(message.getMessage());
         } else if (holder instanceof ButtonViewHolder) {
             ((ButtonViewHolder) holder).button.setText(message.getMessage());
-
-            ((ButtonViewHolder) holder).button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (buttonClickListener != null) {
-                        buttonClickListener.onButtonClicked(message.getMessage());
-                    }
+            ((ButtonViewHolder) holder).button.setOnClickListener(v -> {
+                if (buttonClickListener != null) {
+                    buttonClickListener.onButtonClicked(message.getMessage());
                 }
             });
+        } else if (holder instanceof FileButtonViewHolder) {
+            ((FileButtonViewHolder) holder).bind();
         }
-        // ❗ SpacerViewHolder는 바인딩 처리 없음
+        // SpacerViewHolder는 바인딩 없음
     }
 
     @Override
@@ -110,7 +121,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    // 🔸 버튼 메시지 ViewHolder
+    // 🔸 단일 버튼 메시지 ViewHolder
     static class ButtonViewHolder extends RecyclerView.ViewHolder {
         TextView button;
 
@@ -120,7 +131,27 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    // 🔸 Spacer 메시지 ViewHolder (빈 공간용)
+    // 🔸 파일 첨부 버튼 ViewHolder
+    class FileButtonViewHolder extends RecyclerView.ViewHolder {
+        Button buttonImage, buttonAudio;
+
+        FileButtonViewHolder(View itemView) {
+            super(itemView);
+            buttonImage = itemView.findViewById(R.id.button_image);
+            buttonAudio = itemView.findViewById(R.id.button_audio);
+        }
+
+        void bind() {
+            buttonImage.setOnClickListener(v -> {
+                if (filePickListener != null) filePickListener.onFilePickRequested("image");
+            });
+            buttonAudio.setOnClickListener(v -> {
+                if (filePickListener != null) filePickListener.onFilePickRequested("audio");
+            });
+        }
+    }
+
+    // 🔸 Spacer ViewHolder
     static class SpacerViewHolder extends RecyclerView.ViewHolder {
         SpacerViewHolder(View itemView) {
             super(itemView);

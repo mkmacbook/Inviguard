@@ -69,14 +69,22 @@ public class ChatActivity extends AppCompatActivity {
             ImageView backButton = findViewById(R.id.back);
 
             messageList = new ArrayList<>();
-
             chatAdapter = new ChatAdapter(messageList);
+
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
             recyclerView.setAdapter(chatAdapter);
 
             backButton.setOnClickListener(v -> finish());
 
+            // 리스너 등록
             chatAdapter.setOnButtonClickListener(this::handleUserInput);
+            chatAdapter.setOnFilePickRequestedListener(type -> {
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setType(type.equals("image") ? "image/*" : "audio/*");
+                int code = type.equals("image") ? REQUEST_CODE_PICK_IMAGE : REQUEST_CODE_PICK_AUDIO;
+                startActivityForResult(intent, code);
+            });
+
             buttonSend.setOnClickListener(view -> {
                 String userText = editText.getText().toString().trim();
                 if (!userText.isEmpty()) {
@@ -148,31 +156,27 @@ public class ChatActivity extends AppCompatActivity {
             return;
         }
 
-        String mappedInput = mapInput(input);  // ✅ 매핑 적용
+        String mappedInput = mapInput(input);
         Log.d("ChatState", "입력: " + input + " → 매핑: " + mappedInput + ", 현재 상태: " + currentState);
 
         getNextStateFromServer(currentState, mappedInput);
-        saveUserMessage(sessionId, input); // 원래 입력 저장
+        saveUserMessage(sessionId, input);
     }
 
-    // ✅ 사용자 입력 → 서버 키워드 매핑
     private String mapInput(String input) {
-        // intro에서 버튼 입력 등 고정 키 매핑 (expects가 input_key인 버튼으로 들어가는 것들 매핑하는 코드)
         switch (input) {
             case "시작하기": return "start";
-            case "예": return "yes";
+            case "네": return "yes";
             case "아니요": return "no";
             case "사진·음성 증거 더 추가하기": return "additional_evidence_upload";
             case "상황 설명 추가로 입력하기": return "additional_description";
             case "분석 시작하기": return "start_evaluation";
         }
 
-        // prompt_general_description에서 텍스트가 써지면 description_provided라는 transitions로 처리
         if ("prompt_general_description".equals(currentState)) {
             return "description_provided";
         }
 
-        // 그 외에는 원문 그대로 전달
         return input;
     }
 
@@ -234,7 +238,18 @@ public class ChatActivity extends AppCompatActivity {
                         try {
                             JSONObject json = new JSONObject(response.body().string());
                             String message = json.getString("content");
-                            runOnUiThread(() -> addMessage(message, ChatMessage.TYPE_BOT));
+                            String state = json.optString("state");
+
+                            runOnUiThread(() -> {
+                                addMessage(message, ChatMessage.TYPE_BOT);
+
+                                // ✅ 파일 첨부 버튼 추가 조건
+                                if ("wait_file_upload".equals(state)) {
+                                    messageList.add(new ChatMessage(ChatMessage.TYPE_FILE_BUTTONS));
+                                    chatAdapter.notifyItemInserted(messageList.size() - 1);
+                                    recyclerView.scrollToPosition(messageList.size() - 1);
+                                }
+                            });
                         } catch (JSONException e) {
                             runOnUiThread(() -> addMessage("❗JSON 파싱 오류", ChatMessage.TYPE_BOT));
                         }
@@ -274,7 +289,12 @@ public class ChatActivity extends AppCompatActivity {
 
     private void addMessage(String text, int type) {
         try {
-            messageList.add(new ChatMessage(text, type));
+            String formattedText = text.replaceAll("\\.\\s+", ".\n");
+            if (formattedText.endsWith("\n")) {
+                formattedText = formattedText.substring(0, formattedText.length() - 1);
+            }
+
+            messageList.add(new ChatMessage(formattedText, type));
             chatAdapter.notifyItemInserted(messageList.size() - 1);
             recyclerView.scrollToPosition(messageList.size() - 1);
         } catch (Exception e) {
