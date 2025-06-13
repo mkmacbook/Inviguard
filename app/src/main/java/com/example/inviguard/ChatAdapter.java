@@ -72,6 +72,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else if (viewType == ChatMessage.TYPE_USER_AUDIO) {
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_item_user_audio, parent, false);
             return new UserAudioViewHolder(view);
+        }  else if (viewType == ChatMessage.TYPE_REVIEW_OPTIONS) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_item_review_options, parent, false);
+            return new ReviewOptionsViewHolder(view);
         } else if (viewType == ChatMessage.TYPE_SPACER) {
             View spacerView = new View(parent.getContext());
             int heightInPx = (int) (32 * parent.getContext().getResources().getDisplayMetrics().density); // 32dp
@@ -106,8 +109,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ((UserImageViewHolder) holder).bind(message);
         } else if (holder instanceof UserAudioViewHolder) { // 오디오 바인딩
             ((UserAudioViewHolder) holder).bind(message);
+        } else if (holder instanceof ReviewOptionsViewHolder) {
+            ((ReviewOptionsViewHolder) holder).bind(buttonClickListener);
         }
-        // SpacerViewHolder는 바인딩 없음
     }
 
     @Override
@@ -161,6 +165,30 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             });
             buttonAudio.setOnClickListener(v -> {
                 if (filePickListener != null) filePickListener.onFilePickRequested("audio");
+            });
+        }
+    }
+
+    // 🔸 분석 전 옵션 선택 ViewHolder
+    static class ReviewOptionsViewHolder extends RecyclerView.ViewHolder {
+        Button btnStartEval, btnAddDesc, btnAddEvidence;
+
+        ReviewOptionsViewHolder(View itemView) {
+            super(itemView);
+            btnStartEval = itemView.findViewById(R.id.button_start_evaluation);
+            btnAddDesc = itemView.findViewById(R.id.button_additional_description);
+            btnAddEvidence = itemView.findViewById(R.id.button_additional_evidence);
+        }
+
+        void bind(OnButtonClickListener listener) {
+            btnStartEval.setOnClickListener(v -> {
+                if (listener != null) listener.onButtonClicked("분석 시작하기");
+            });
+            btnAddDesc.setOnClickListener(v -> {
+                if (listener != null) listener.onButtonClicked("상황 설명 추가로 입력하기");
+            });
+            btnAddEvidence.setOnClickListener(v -> {
+                if (listener != null) listener.onButtonClicked("사진·음성 증거 더 추가하기");
             });
         }
     }

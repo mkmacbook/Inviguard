@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -288,7 +290,7 @@ public class ChatActivity extends AppCompatActivity {
             public void onResponse(Call call, Response response) throws IOException {
                 runOnUiThread(() -> {
                     if (response.isSuccessful()) {
-                        addMessage("✅ 추가 설명이 저장되었습니다", ChatMessage.TYPE_BOT);
+                        addMessage("추가 설명이 저장되었습니다", ChatMessage.TYPE_BOT);
                         // 상태 전이 진행
                         runStateTransitionFlowWithSystemEvent("description_provided");
                     } else {
@@ -422,9 +424,10 @@ public class ChatActivity extends AppCompatActivity {
             case "run_ocr":
                 runOCROnLatestEvidence();
                 break;
-            case "end_evidence_upload":
-                // expects: "none" 상태 - 원래는 백엔드에서 처리하면 좋은 코드지만 임시로 처리
-                runStateTransitionFlowWithSystemEvent("evidence_provided");
+            case "end_evidence_upload": //이벤트가 발생해야지만 다음 메시지로 넘어가서 임의로 넣기
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    runStateTransitionFlowWithSystemEvent("evidence_provided");
+                }, 300);
                 break;
             case "review_before_evaluation":
                 messageList.add(new ChatMessage(ChatMessage.TYPE_REVIEW_OPTIONS));
@@ -452,7 +455,7 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
-    // ✅ 파일 메시지 추가를 위한 새 메서드
+    // 파일 메시지 추가를 위한 새 메서드
     private void addFileMessage(String text, int type, String fileUri) {
         try {
             messageList.add(new ChatMessage(text, type, fileUri));
@@ -474,7 +477,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void uploadFileToServer(Uri uri, String type) {
-        // ✅ 파일을 사용자 메시지로 먼저 표시
+        // 파일을 사용자 메시지로 먼저 표시
         if (type.equals("image")) {
             addFileMessage("", ChatMessage.TYPE_USER_IMAGE, uri.toString());
         } else {
@@ -608,8 +611,6 @@ public class ChatActivity extends AppCompatActivity {
                 .put(RequestBody.create("", MediaType.parse("application/json")))
                 .build();
 
-        // OCR 실행 중 메시지는 여기서만 한 번만 표시
-        // addMessage("OCR 실행 중...", ChatMessage.TYPE_BOT);
 
         client.newCall(request).enqueue(new Callback() {
             @Override
