@@ -452,6 +452,17 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
+    // ✅ 파일 메시지 추가를 위한 새 메서드
+    private void addFileMessage(String text, int type, String fileUri) {
+        try {
+            messageList.add(new ChatMessage(text, type, fileUri));
+            chatAdapter.notifyItemInserted(messageList.size() - 1);
+            recyclerView.scrollToPosition(messageList.size() - 1);
+        } catch (Exception e) {
+            // 메시지 추가 실패 시 무시
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -463,6 +474,13 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void uploadFileToServer(Uri uri, String type) {
+        // ✅ 파일을 사용자 메시지로 먼저 표시
+        if (type.equals("image")) {
+            addFileMessage("", ChatMessage.TYPE_USER_IMAGE, uri.toString());
+        } else {
+            addFileMessage("🎤 오디오 파일", ChatMessage.TYPE_USER_AUDIO, uri.toString());
+        }
+
         try {
             String fileName = "upload." + (type.equals("image") ? "jpg" : "mp3");
 
@@ -516,7 +534,7 @@ public class ChatActivity extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         try {
                             JSONObject result = new JSONObject(responseBody);
-                            latestEvidenceId = result.getInt("evidence_id"); // 증거 ID 저장
+                            latestEvidenceId = result.getInt("evidence_id");
                         } catch (JSONException e) {
                             // JSON 파싱 실패 시 무시
                         }
