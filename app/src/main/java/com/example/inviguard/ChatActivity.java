@@ -432,6 +432,15 @@ public class ChatActivity extends AppCompatActivity {
             case "review_before_evaluation":
                 messageList.add(new ChatMessage(ChatMessage.TYPE_REVIEW_OPTIONS));
                 break;
+            case "start_evaluation":
+                // 분석 시작 - AnalyzingActivity로 이동
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    Intent intent = new Intent(ChatActivity.this, AnalyzingActivity.class);
+                    // 필요한 경우 세션 ID나 기타 데이터를 전달
+                    intent.putExtra("session_id", sessionId);
+                    startActivity(intent);
+                }, 2000);
+                break;
             default:
                 break;
         }
