@@ -707,11 +707,6 @@ public class ChatActivity extends AppCompatActivity {
             case "wait_file_upload":
                 messageList.add(new ChatMessage(ChatMessage.TYPE_FILE_BUTTONS));
                 break;
-            case "ask_is_textual":
-                // 텍스트성 질문에 대한 예/아니요 버튼 추가
-                messageList.add(new ChatMessage("예", ChatMessage.TYPE_BUTTON));
-                messageList.add(new ChatMessage("아니요", ChatMessage.TYPE_BUTTON));
-                break;
             case "run_ocr":
                 runOCROnLatestEvidence();
                 break;
