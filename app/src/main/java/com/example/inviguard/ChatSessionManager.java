@@ -91,7 +91,7 @@ public class ChatSessionManager {
         TextView title = dialog.findViewById(R.id.dialog_title);
         TextView message = dialog.findViewById(R.id.dialog_message);
         title.setText("채팅을 삭제하시겠습니까?");
-        message.setText("선택하신 \"" + summary + "\" 채팅은 모두 삭제되며,\n삭제된 내용은 복구되지 않습니다.");
+        message.setText(summary + "\" 채팅을 삭제하시겠어요? \n삭제된 내용은 복구되지 않습니다.");
 
         Button btnCancel = dialog.findViewById(R.id.btn_cancel);
         Button btnConfirm = dialog.findViewById(R.id.btn_confirm);

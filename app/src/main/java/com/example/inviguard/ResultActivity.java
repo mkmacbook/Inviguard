@@ -16,10 +16,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
-import okhttp3.*;
-import org.json.JSONException;
-import org.json.JSONObject;
-import android.util.Log;
 
 public class ResultActivity extends AppCompatActivity {
 
@@ -43,6 +39,7 @@ public class ResultActivity extends AppCompatActivity {
     private int sessionEvalResultId;
     private ArrayList<Integer> categoryIds;
     private ArrayList<Integer> severityList;
+    private boolean hasEvidence;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +82,7 @@ public class ResultActivity extends AppCompatActivity {
         sessionEvalResultId = getIntent().getIntExtra("session_eval_result_id", 0);
         categoryIds = getIntent().getIntegerArrayListExtra("category_ids");
         severityList = getIntent().getIntegerArrayListExtra("severity_list");
+        hasEvidence = getIntent().getBooleanExtra("has_evidence", false);
 
         if (categoryIds == null) categoryIds = new ArrayList<>();
         if (severityList == null) severityList = new ArrayList<>();
@@ -159,6 +157,8 @@ public class ResultActivity extends AppCompatActivity {
             typeText.setText("·  " + getHarassmentTypeDescription(categoryId));
             typeText.setTextSize(16);
             typeText.setTextColor(getResources().getColor(R.color.text_primary));
+            // API 26 이상에서만 getFont() 사용 가능하므로 제거하거나 조건부 사용
+            // typeText.setTypeface(getResources().getFont(R.font.roboto_medium));
 
             // 텍스트 간격 설정
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -209,6 +209,9 @@ public class ResultActivity extends AppCompatActivity {
         dialog.findViewById(R.id.iv_close).setOnClickListener(v -> dialog.dismiss());
         dialog.findViewById(R.id.btn_cancel).setOnClickListener(v -> dialog.dismiss());
         dialog.findViewById(R.id.btn_confirm).setOnClickListener(v -> {
+            // 신고 레코드 생성
+            createReport();
+
             Intent intent = new Intent(ResultActivity.this, SituationActivity.class);
             startActivity(intent);
             finish();
@@ -226,5 +229,48 @@ public class ResultActivity extends AppCompatActivity {
         }
 
         dialog.show();
+    }
+
+    private void createReport() {
+        okhttp3.OkHttpClient client = new okhttp3.OkHttpClient();
+        String url = "http://10.0.2.2:3000/api/chat/reports";
+
+        try {
+            org.json.JSONObject jsonBody = new org.json.JSONObject();
+            jsonBody.put("user_id", 1); // 현재 사용자 ID (하드코딩)
+            jsonBody.put("chat_session_id", sessionId);
+            jsonBody.put("status", "PENDING");
+            jsonBody.put("evidence_included", hasEvidence);
+
+            okhttp3.RequestBody body = okhttp3.RequestBody.create(
+                    jsonBody.toString(),
+                    okhttp3.MediaType.parse("application/json")
+            );
+
+            okhttp3.Request request = new okhttp3.Request.Builder()
+                    .url(url)
+                    .post(body)
+                    .build();
+
+            client.newCall(request).enqueue(new okhttp3.Callback() {
+                @Override
+                public void onFailure(okhttp3.Call call, java.io.IOException e) {
+                    android.util.Log.e("ResultActivity", "신고 생성 실패", e);
+                    // 실패해도 SituationActivity로 이동은 계속 진행
+                }
+
+                @Override
+                public void onResponse(okhttp3.Call call, okhttp3.Response response) throws java.io.IOException {
+                    if (response.isSuccessful()) {
+                        android.util.Log.d("ResultActivity", "신고 생성 성공");
+                    } else {
+                        android.util.Log.e("ResultActivity", "신고 생성 실패: " + response.code());
+                    }
+                }
+            });
+
+        } catch (org.json.JSONException e) {
+            android.util.Log.e("ResultActivity", "신고 JSON 생성 실패", e);
+        }
     }
 }
