@@ -12,6 +12,8 @@
         android:id="@+id/button_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/button_black_rounded"
         android:text="시작하기"
         android:textColor="#FFFFFF"

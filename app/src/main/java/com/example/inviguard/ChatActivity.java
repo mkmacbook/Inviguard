@@ -1,27 +1,30 @@
 package com.example.inviguard;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,6 +34,7 @@ import java.util.Locale;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -40,6 +44,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private int sessionId = -1;
     private String currentState = "intro";
+    private int latestEvidenceId = -1; // 가장 최근 업로드된 증거 ID
 
     private RecyclerView recyclerView;
     private ChatAdapter chatAdapter;
@@ -55,6 +60,7 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
+        // 상태바 설정
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -62,44 +68,44 @@ public class ChatActivity extends AppCompatActivity {
             window.setStatusBarColor(ContextCompat.getColor(this, R.color.black_primary));
         }
 
-        try {
-            recyclerView = findViewById(R.id.recycler_view);
-            editText = findViewById(R.id.edit_text);
-            buttonSend = findViewById(R.id.button_send);
-            ImageView backButton = findViewById(R.id.back);
+        recyclerView = findViewById(R.id.recycler_view);
+        editText = findViewById(R.id.edit_text);
+        buttonSend = findViewById(R.id.button_send);
+        ImageView backButton = findViewById(R.id.back);
 
-            messageList = new ArrayList<>();
+        messageList = new ArrayList<>();
+        chatAdapter = new ChatAdapter(messageList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(chatAdapter);
 
-            chatAdapter = new ChatAdapter(messageList);
-            recyclerView.setLayoutManager(new LinearLayoutManager(this));
-            recyclerView.setAdapter(chatAdapter);
+        backButton.setOnClickListener(v -> finish());
 
-            backButton.setOnClickListener(v -> finish());
+        chatAdapter.setOnButtonClickListener(this::sendUserInput);
+        chatAdapter.setOnFilePickRequestedListener(type -> {
+            Intent intent = new Intent(Intent.ACTION_PICK);
+            intent.setType(type.equals("image") ? "image/*" : "audio/*");
+            int code = type.equals("image") ? REQUEST_CODE_PICK_IMAGE : REQUEST_CODE_PICK_AUDIO;
+            startActivityForResult(intent, code);
+        });
 
-            chatAdapter.setOnButtonClickListener(this::handleUserInput);
-            buttonSend.setOnClickListener(view -> {
-                String userText = editText.getText().toString().trim();
-                if (!userText.isEmpty()) {
-                    editText.setText("");
-                    handleUserInput(userText);
-                }
-            });
+        buttonSend.setOnClickListener(view -> {
+            String userText = editText.getText().toString().trim();
+            if (!userText.isEmpty()) {
+                editText.setText("");
+                sendUserInput(userText);
+            }
+        });
 
-            createChatSession();
-        } catch (Exception e) {
-            Log.e("CrashCheck", "❌ onCreate 내부 예외: " + e.getMessage(), e);
-        }
+        createChatSession();
     }
 
     private void createChatSession() {
         OkHttpClient client = new OkHttpClient();
         String url = "http://10.0.2.2:3000/api/chat/sessions";
-
         JSONObject jsonBody = new JSONObject();
         try {
             jsonBody.put("user_id", 1);
         } catch (JSONException e) {
-            e.printStackTrace();
             return;
         }
 
@@ -114,152 +120,77 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    try {
-                        JSONObject json = new JSONObject(response.body().string());
-                        sessionId = json.getInt("session_id");
+                String responseBody = response.body().string();
 
-                        JSONObject botMessage = json.optJSONObject("bot_message");
-                        if (botMessage != null && botMessage.has("content")) {
-                            String content = botMessage.getString("content");
-                            currentState = botMessage.optString("state", "intro");
+                if (!response.isSuccessful()) {
+                    runOnUiThread(() -> addMessage("❗서버 오류: " + response.code(), ChatMessage.TYPE_BOT));
+                    return;
+                }
 
-                            runOnUiThread(() -> {
-                                addMessage(content, ChatMessage.TYPE_BOT);
-                                addMessage("시작하기", ChatMessage.TYPE_BUTTON);
-                            });
-                        } else {
-                            runOnUiThread(() -> addMessage("❗초기 메시지를 불러올 수 없어요", ChatMessage.TYPE_BOT));
-                        }
-                    } catch (JSONException e) {
-                        runOnUiThread(() -> addMessage("❗JSON 파싱 오류", ChatMessage.TYPE_BOT));
-                    }
-                } else {
-                    runOnUiThread(() -> addMessage("❗응답 오류: " + response.code(), ChatMessage.TYPE_BOT));
+                try {
+                    JSONObject json = new JSONObject(responseBody);
+                    sessionId = json.getInt("session_id");
+                    JSONObject botMessage = json.getJSONObject("bot_message");
+                    runOnUiThread(() -> handleBotResponse(botMessage));
+                } catch (JSONException e) {
+                    runOnUiThread(() -> addMessage("❗초기 응답 오류", ChatMessage.TYPE_BOT));
                 }
             }
         });
     }
 
-    private void handleUserInput(String input) {
-        addMessage(input, ChatMessage.TYPE_USER);
-        if (sessionId == -1) {
-            addMessage("❗세션 ID가 없습니다.", ChatMessage.TYPE_BOT);
-            return;
-        }
-
-        String mappedInput = mapInput(input);  // ✅ 매핑 적용
-        Log.d("ChatState", "입력: " + input + " → 매핑: " + mappedInput + ", 현재 상태: " + currentState);
-
-        getNextStateFromServer(currentState, mappedInput);
-        saveUserMessage(sessionId, input); // 원래 입력 저장
-    }
-
-    // ✅ 사용자 입력 → 서버 키워드 매핑
-    private String mapInput(String input) {
-        // intro에서 버튼 입력 등 고정 키 매핑 (expects가 input_key인 버튼으로 들어가는 것들 매핑하는 코드)
+    private String normalizeInputKey(String input) {
+        input = input.trim().toLowerCase();
         switch (input) {
-            case "시작하기": return "start";
-            case "예": return "yes";
-            case "아니요": return "no";
-            case "사진·음성 증거 더 추가하기": return "additional_evidence_upload";
-            case "상황 설명 추가로 입력하기": return "additional_description";
-            case "분석 시작하기": return "start_evaluation";
-        }
-
-        // prompt_general_description에서 텍스트가 써지면 description_provided라는 transitions로 처리
-        if ("prompt_general_description".equals(currentState)) {
-            return "description_provided";
-        }
-
-        // 그 외에는 원문 그대로 전달
-        return input;
-    }
-
-    private void getNextStateFromServer(String current, String input) {
-        OkHttpClient client = new OkHttpClient();
-        String url = "http://10.0.2.2:3000/api/chat/state/next?currentState=" + current + "&input=" + input;
-        Log.d("ChatState", "GET → " + url);
-
-        Request request = new Request.Builder().url(url).get().build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                runOnUiThread(() -> addMessage("❗다음 상태 가져오기 실패", ChatMessage.TYPE_BOT));
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    try {
-                        JSONObject json = new JSONObject(response.body().string());
-                        String nextState = json.optString("nextState", null);
-
-                        Log.d("ChatState", "다음 상태: " + nextState);
-
-                        if (nextState != null && !nextState.isEmpty()) {
-                            currentState = nextState;
-                            fetchBotMessageByState(nextState);
-                        } else {
-                            runOnUiThread(() -> addMessage("❗서버에서 다음 상태를 찾지 못했어요", ChatMessage.TYPE_BOT));
-                        }
-                    } catch (JSONException e) {
-                        runOnUiThread(() -> addMessage("❗JSON 파싱 오류", ChatMessage.TYPE_BOT));
-                    }
-                } else {
-                    runOnUiThread(() -> addMessage("❗응답 오류: " + response.code(), ChatMessage.TYPE_BOT));
-                }
-            }
-        });
-    }
-
-    private void fetchBotMessageByState(String state) {
-        try {
-            String encodedState = URLEncoder.encode(state, "UTF-8");
-            String url = "http://10.0.2.2:3000/api/chat/bot-message/state/" + encodedState;
-
-            OkHttpClient client = new OkHttpClient();
-            Request request = new Request.Builder().url(url).get().build();
-
-            client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    runOnUiThread(() -> addMessage("❗서버 연결 실패", ChatMessage.TYPE_BOT));
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    if (response.isSuccessful()) {
-                        try {
-                            JSONObject json = new JSONObject(response.body().string());
-                            String message = json.getString("content");
-                            runOnUiThread(() -> addMessage(message, ChatMessage.TYPE_BOT));
-                        } catch (JSONException e) {
-                            runOnUiThread(() -> addMessage("❗JSON 파싱 오류", ChatMessage.TYPE_BOT));
-                        }
-                    } else {
-                        runOnUiThread(() -> addMessage("❗응답 오류: " + response.code(), ChatMessage.TYPE_BOT));
-                    }
-                }
-            });
-        } catch (UnsupportedEncodingException e) {
-            runOnUiThread(() -> addMessage("❗URL 인코딩 실패", ChatMessage.TYPE_BOT));
+            case "시작하기":
+                return "start";
+            case "예":
+            case "네":
+            case "yes":
+                return "yes";
+            case "아니요":
+            case "no":
+                return "no";
+            case "사진·음성 증거 더 추가하기":
+                return "additional_evidence_upload";
+            case "상황 설명 추가로 입력하기":
+                return "additional_description";
+            case "분석 시작하기":
+                return "start_evaluation";
+            default:
+                return input;
         }
     }
 
-    private void saveUserMessage(int sessionId, String input) {
+    // 증거 설명이 필요한 상태들을 정확히 체크
+    private boolean shouldSaveEvidenceDescription(String state) {
+        return state.equals("ocr_success_ask_description") ||
+                state.equals("ocr_fail_ask_description") ||
+                state.equals("no_text_ask_description") ||
+                state.equals("ask_description");
+    }
+
+    // 추가 상황 설명 상태 체크
+    private boolean shouldSaveAdditionalDescription(String state) {
+        return state.equals("prompt_additional_description");
+    }
+
+    // 첫 상황 설명 상태 체크
+    private boolean shouldAnalyzeGeneralDescription(String state) {
+        return state.equals("prompt_general_description");
+    }
+
+    // 첫 상황 설명 저장 및 분석 메서드
+    private void saveAndAnalyzeGeneralDescription(String description) {
         OkHttpClient client = new OkHttpClient();
         String url = "http://10.0.2.2:3000/api/chat/sessions/" + sessionId + "/messages";
 
         JSONObject jsonBody = new JSONObject();
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-            String formattedTime = sdf.format(new Date());
-            jsonBody.put("content", input);
-            jsonBody.put("timestamp", formattedTime);
+            jsonBody.put("content", description);
+            jsonBody.put("timestamp", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()));
         } catch (JSONException e) {
-            e.printStackTrace();
+            addMessage("❗요청 생성 실패", ChatMessage.TYPE_BOT);
             return;
         }
 
@@ -267,18 +198,565 @@ public class ChatActivity extends AppCompatActivity {
         Request request = new Request.Builder().url(url).post(body).build();
 
         client.newCall(request).enqueue(new Callback() {
-            @Override public void onFailure(Call call, IOException e) {}
-            @Override public void onResponse(Call call, Response response) throws IOException {}
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(() -> addMessage("❗메시지 전송 실패", ChatMessage.TYPE_BOT));
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    try {
+                        String responseBody = response.body().string();
+                        JSONObject result = new JSONObject(responseBody);
+                        JSONObject userMessage = result.optJSONObject("user_message");
+
+                        if (userMessage != null) {
+                            int messageId = userMessage.optInt("id", -1);
+                            if (messageId != -1) {
+                                // 첫 상황 설명 메시지 분석 후 상태 전이
+                                runOnUiThread(() -> {
+                                    analyzeMessage(messageId, () -> {
+                                        Log.d("ChatActivity", "첫 상황 설명 분석 완료");
+                                        // description_provided 대신 직접 wait_file_upload로 전이
+                                        runStateTransitionFlow("start_evidence_upload");
+                                    });
+                                });
+                                return;
+                            }
+                        }
+                    } catch (JSONException | IOException e) {
+                        Log.e("ChatActivity", "첫 상황 설명 메시지 ID 추출 실패", e);
+                    }
+
+                    // 메시지 ID 추출 실패 시 바로 상태 전이
+                    runOnUiThread(() -> runStateTransitionFlow("start_evidence_upload"));
+                } else {
+                    runOnUiThread(() -> addMessage("❗메시지 저장 실패", ChatMessage.TYPE_BOT));
+                }
+            }
         });
+    }
+
+    // is_textual 업데이트 메서드
+    private void updateEvidenceTextuality(boolean isTextual) {
+        if (latestEvidenceId == -1) {
+            addMessage("❗증거 파일을 찾을 수 없습니다", ChatMessage.TYPE_BOT);
+            return;
+        }
+
+        OkHttpClient client = new OkHttpClient();
+        String url = "http://10.0.2.2:3000/api/chat/evidence/" + latestEvidenceId + "/textuality";
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("is_textual", isTextual);
+        } catch (JSONException e) {
+            addMessage("❗요청 생성 실패", ChatMessage.TYPE_BOT);
+            return;
+        }
+
+        RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json"));
+        Request request = new Request.Builder().url(url).put(body).build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(() -> addMessage("❗텍스트성 설정 실패", ChatMessage.TYPE_BOT));
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                runOnUiThread(() -> {
+                    if (response.isSuccessful()) {
+                        Log.d("ChatActivity", "is_textual 설정 완료: " + isTextual);
+                    } else {
+                        addMessage("❗텍스트성 설정 실패: " + response.code(), ChatMessage.TYPE_BOT);
+                    }
+                });
+            }
+        });
+    }
+
+    // 증거 설명 저장 후 분석을 시작하는 메서드
+    private void saveEvidenceDescription(String description) {
+        if (latestEvidenceId == -1) {
+            addMessage("❗증거 파일을 찾을 수 없습니다", ChatMessage.TYPE_BOT);
+            return;
+        }
+
+        OkHttpClient client = new OkHttpClient();
+        String url = "http://10.0.2.2:3000/api/chat/evidence/" + latestEvidenceId + "/description";
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("evidence_description", description);
+        } catch (JSONException e) {
+            addMessage("❗요청 생성 실패", ChatMessage.TYPE_BOT);
+            return;
+        }
+
+        RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json"));
+        Request request = new Request.Builder().url(url).put(body).build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(() -> addMessage("❗설명 저장 실패", ChatMessage.TYPE_BOT));
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                runOnUiThread(() -> {
+                    if (response.isSuccessful()) {
+                        // 설명 저장 후 증거 분석 시작 (백그라운드에서 진행)
+                        analyzeEvidence(latestEvidenceId);
+                    } else {
+                        addMessage("❗설명 저장 실패: " + response.code(), ChatMessage.TYPE_BOT);
+                    }
+                });
+            }
+        });
+    }
+
+    // analyzeEvidence 메서드에서도 상태 전이 방식 변경
+    private void analyzeEvidence(int evidenceId) {
+        // 1. OCR 텍스트 분석 (KoBERT 모델 사용)
+        analyzeOCRText(evidenceId, () -> {
+            // 2. OCR 분석 완료 후 설명 분석 (OpenAI API 사용)
+            analyzeEvidenceDescription(evidenceId, () -> {
+                // 3. 모든 분석 완료 후 상태 전이
+                runOnUiThread(() -> {
+                    // description_provided 대신 직접 다음 단계로 전이
+                    runStateTransitionFlow("evidence_analysis_complete");
+                });
+            });
+        });
+    }
+
+    // OCR 텍스트 분석 (KoBERT 모델)
+    private void analyzeOCRText(int evidenceId, Runnable onComplete) {
+        OkHttpClient client = new OkHttpClient();
+        String url = "http://10.0.2.2:3000/api/chat/analysis/evidence/" + evidenceId;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(RequestBody.create("", MediaType.parse("application/json")))
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("ChatActivity", "OCR 텍스트 분석 실패", e);
+                runOnUiThread(() -> {
+                    onComplete.run(); // 실패해도 다음 단계 진행
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+
+                runOnUiThread(() -> {
+                    if (response.isSuccessful()) {
+                        try {
+                            JSONObject result = new JSONObject(responseBody);
+                            Log.d("ChatActivity", "OCR 분석 결과: " + responseBody);
+
+                        } catch (JSONException e) {
+                            Log.e("ChatActivity", "OCR 분석 결과 파싱 실패", e);
+                        }
+                    } else {
+                        Log.e("ChatActivity", "OCR 분석 실패: " + response.code());
+                    }
+
+                    onComplete.run(); // 성공/실패 관계없이 다음 단계 진행
+                });
+            }
+        });
+    }
+
+    // 증거 설명 분석 (OpenAI API)
+    private void analyzeEvidenceDescription(int evidenceId, Runnable onComplete) {
+        OkHttpClient client = new OkHttpClient();
+        String url = "http://10.0.2.2:3000/api/chat/analysis/evidence/openai/" + evidenceId;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(RequestBody.create("", MediaType.parse("application/json")))
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("ChatActivity", "증거 설명 분석 실패", e);
+                runOnUiThread(() -> {
+                    onComplete.run(); // 실패해도 다음 단계 진행
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+
+                runOnUiThread(() -> {
+                    if (response.isSuccessful()) {
+                        try {
+                            JSONObject result = new JSONObject(responseBody);
+                            Log.d("ChatActivity", "설명 분석 결과: " + responseBody);
+
+                        } catch (JSONException e) {
+                            Log.e("ChatActivity", "설명 분석 결과 파싱 실패", e);
+                        }
+                    } else {
+                        Log.e("ChatActivity", "설명 분석 실패: " + response.code());
+                    }
+
+                    onComplete.run(); // 성공/실패 관계없이 다음 단계 진행
+                });
+            }
+        });
+    }
+
+    // 메시지 분석 메서드 (상황 설명 분석용)
+    private void analyzeMessage(int messageId, Runnable onComplete) {
+        OkHttpClient client = new OkHttpClient();
+        String url = "http://10.0.2.2:3000/api/chat/analysis/message/openai/" + messageId;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(RequestBody.create("", MediaType.parse("application/json")))
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("ChatActivity", "메시지 분석 실패", e);
+                runOnUiThread(() -> {
+                    if (onComplete != null) onComplete.run();
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+
+                runOnUiThread(() -> {
+                    if (response.isSuccessful()) {
+                        try {
+                            JSONObject result = new JSONObject(responseBody);
+                            Log.d("ChatActivity", "메시지 분석 결과: " + responseBody);
+
+                        } catch (JSONException e) {
+                            Log.e("ChatActivity", "메시지 분석 결과 파싱 실패", e);
+                        }
+                    } else {
+                        Log.e("ChatActivity", "메시지 분석 실패: " + response.code());
+                    }
+
+                    if (onComplete != null) onComplete.run();
+                });
+            }
+        });
+    }
+
+    private void sendUserInput(String input) {
+        addMessage(input, ChatMessage.TYPE_USER);
+        if (sessionId == -1) {
+            addMessage("❗세션이 생성되지 않았습니다", ChatMessage.TYPE_BOT);
+            return;
+        }
+
+        // is_textual 질문에 대한 답변 처리
+        if (currentState.equals("ask_is_textual")) {
+            String normalizedInput = normalizeInputKey(input);
+            boolean isTextual = normalizedInput.equals("yes");
+
+            // is_textual 설정
+            updateEvidenceTextuality(isTextual);
+
+            // 상태 전이
+            runStateTransitionFlow(normalizedInput);
+            return;
+        }
+
+        // 증거 설명 저장이 필요한 상태 처리
+        if (shouldSaveEvidenceDescription(currentState)) {
+            saveEvidenceDescription(input);
+            return;
+        }
+
+        // 추가 상황 설명 저장이 필요한 상태 처리
+        if (shouldSaveAdditionalDescription(currentState)) {
+            saveAdditionalDescription(input);
+            return;
+        }
+
+        // 첫 상황 설명 처리 (prompt_general_description)
+        if (shouldAnalyzeGeneralDescription(currentState)) {
+            saveAndAnalyzeGeneralDescription(input);
+            return;
+        }
+
+        // 기타 일반적인 입력 처리
+        OkHttpClient client = new OkHttpClient();
+        String url = "http://10.0.2.2:3000/api/chat/sessions/" + sessionId + "/messages";
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("content", input);
+            jsonBody.put("timestamp", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()));
+        } catch (JSONException e) {
+            return;
+        }
+
+        RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json"));
+        Request request = new Request.Builder().url(url).post(body).build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(() -> addMessage("❗메시지 전송 실패", ChatMessage.TYPE_BOT));
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String normalizedInput = normalizeInputKey(input);
+                    runStateTransitionFlow(normalizedInput);
+                } else {
+                    runOnUiThread(() -> addMessage("❗메시지 저장 실패", ChatMessage.TYPE_BOT));
+                }
+            }
+        });
+    }
+
+    private void saveAdditionalDescription(String description) {
+        // 추가 상황 설명은 일반 메시지로 저장
+        OkHttpClient client = new OkHttpClient();
+        String url = "http://10.0.2.2:3000/api/chat/sessions/" + sessionId + "/messages";
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("content", description);
+            jsonBody.put("timestamp", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()));
+        } catch (JSONException e) {
+            addMessage("❗요청 생성 실패", ChatMessage.TYPE_BOT);
+            return;
+        }
+
+        RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json"));
+        Request request = new Request.Builder().url(url).post(body).build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(() -> addMessage("❗설명 저장 실패", ChatMessage.TYPE_BOT));
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                runOnUiThread(() -> {
+                    if (response.isSuccessful()) {
+                        // 저장된 메시지 ID 추출 후 분석
+                        try {
+                            String responseBody = response.body().string();
+                            JSONObject result = new JSONObject(responseBody);
+                            JSONObject userMessage = result.optJSONObject("user_message");
+                            if (userMessage != null) {
+                                int messageId = userMessage.optInt("id", -1);
+                                if (messageId != -1) {
+                                    analyzeMessage(messageId, () -> {
+                                        // description_provided 대신 직접 review_before_evaluation로 전이
+                                        runStateTransitionFlow("description_complete");
+                                    });
+                                    return;
+                                }
+                            }
+                        } catch (JSONException e) {
+                            Log.e("ChatActivity", "추가 설명 메시지 ID 추출 실패", e);
+                        } catch (IOException e) {
+                            Log.e("ChatActivity", "응답 읽기 실패", e);
+                        }
+
+                        // 메시지 ID 추출 실패 시 바로 상태 전이
+                        runStateTransitionFlow("description_complete");
+                    } else {
+                        addMessage("❗설명 저장 실패: " + response.code(), ChatMessage.TYPE_BOT);
+                    }
+                });
+            }
+        });
+    }
+
+    private void runStateTransitionFlow(String input) {
+        OkHttpClient client = new OkHttpClient();
+        String url = "http://10.0.2.2:3000/api/chat/state/next?currentState=" + currentState + "&input=" + input;
+
+        Request request = new Request.Builder().url(url).get().build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(() -> addMessage("❗상태 전이 실패", ChatMessage.TYPE_BOT));
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+
+                if (!response.isSuccessful()) {
+                    runOnUiThread(() -> addMessage("❗서버 오류: " + response.code(), ChatMessage.TYPE_BOT));
+                    return;
+                }
+
+                try {
+                    JSONObject json = new JSONObject(responseBody);
+                    String nextState = json.optString("nextState", null);
+
+                    if (nextState == null || nextState.equals("null")) {
+                        runOnUiThread(() -> addMessage("❗상태 전이 규칙을 찾을 수 없습니다", ChatMessage.TYPE_BOT));
+                        return;
+                    }
+
+                    updateSessionState(nextState);
+                } catch (JSONException e) {
+                    runOnUiThread(() -> addMessage("❗전이 응답 오류", ChatMessage.TYPE_BOT));
+                }
+            }
+        });
+    }
+
+    private void updateSessionState(String newState) {
+        OkHttpClient client = new OkHttpClient();
+        String url = "http://10.0.2.2:3000/api/chat/sessions/" + sessionId + "/state";
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("newState", newState);
+        } catch (JSONException e) {
+            return;
+        }
+
+        RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json"));
+        Request request = new Request.Builder().url(url).patch(body).build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(() -> addMessage("❗세션 상태 저장 실패", ChatMessage.TYPE_BOT));
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    fetchNextMessage(newState);
+                } else {
+                    runOnUiThread(() -> addMessage("❗상태 저장 실패", ChatMessage.TYPE_BOT));
+                }
+            }
+        });
+    }
+
+    private void fetchNextMessage(String state) {
+        OkHttpClient client = new OkHttpClient();
+        String url = "http://10.0.2.2:3000/api/chat/state/" + state;
+
+        Request request = new Request.Builder().url(url).get().build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(() -> addMessage("❗다음 메시지 로딩 실패", ChatMessage.TYPE_BOT));
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+
+                if (!response.isSuccessful()) {
+                    runOnUiThread(() -> addMessage("❗메시지 로딩 실패: " + response.code(), ChatMessage.TYPE_BOT));
+                    return;
+                }
+
+                try {
+                    JSONObject botMsg = new JSONObject(responseBody);
+                    currentState = state;
+                    runOnUiThread(() -> handleBotResponse(botMsg));
+                } catch (JSONException e) {
+                    runOnUiThread(() -> addMessage("❗다음 메시지 파싱 실패", ChatMessage.TYPE_BOT));
+                }
+            }
+        });
+    }
+
+    private void handleBotResponse(JSONObject botMsg) {
+        String content = botMsg.optString("message", botMsg.optString("content", ""));
+        String state = botMsg.optString("state", currentState);
+
+        if (!content.isEmpty()) {
+            addMessage(content, ChatMessage.TYPE_BOT);
+        }
+
+        if (state == null || state.isEmpty()) return;
+        currentState = state;
+
+        switch (state) {
+            case "intro":
+                messageList.add(new ChatMessage("시작하기", ChatMessage.TYPE_BUTTON));
+                break;
+            case "wait_file_upload":
+                messageList.add(new ChatMessage(ChatMessage.TYPE_FILE_BUTTONS));
+                break;
+            case "run_ocr":
+                runOCROnLatestEvidence();
+                break;
+            case "end_evidence_upload":
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    runStateTransitionFlowWithSystemEvent("evidence_provided");
+                }, 300);
+                break;
+            case "review_before_evaluation":
+                messageList.add(new ChatMessage(ChatMessage.TYPE_REVIEW_OPTIONS));
+                break;
+            case "start_evaluation":
+                // 분석 시작 - AnalyzingActivity로 이동
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    Intent intent = new Intent(ChatActivity.this, AnalyzingActivity.class);
+                    intent.putExtra("session_id", sessionId);
+                    startActivity(intent);
+                }, 2000);
+                break;
+            default:
+                break;
+        }
+
+        chatAdapter.notifyItemInserted(messageList.size() - 1);
+        recyclerView.scrollToPosition(messageList.size() - 1);
     }
 
     private void addMessage(String text, int type) {
         try {
-            messageList.add(new ChatMessage(text, type));
+            String formattedText = text.replaceAll("\\.\\s+", ".\n");
+            if (formattedText.endsWith("\n")) {
+                formattedText = formattedText.substring(0, formattedText.length() - 1);
+            }
+
+            messageList.add(new ChatMessage(formattedText, type));
             chatAdapter.notifyItemInserted(messageList.size() - 1);
             recyclerView.scrollToPosition(messageList.size() - 1);
         } catch (Exception e) {
-            Log.e("MessageError", "❌ 메시지 추가 실패: " + e.getMessage(), e);
+            // 메시지 추가 실패 시 무시
+        }
+    }
+
+    // 파일 메시지 추가를 위한 새 메서드
+    private void addFileMessage(String text, int type, String fileUri) {
+        try {
+            messageList.add(new ChatMessage(text, type, fileUri));
+            chatAdapter.notifyItemInserted(messageList.size() - 1);
+            recyclerView.scrollToPosition(messageList.size() - 1);
+        } catch (Exception e) {
+            // 메시지 추가 실패 시 무시
         }
     }
 
@@ -286,12 +764,185 @@ public class ChatActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && data != null && data.getData() != null) {
-            String uri = data.getData().toString();
-            if (requestCode == REQUEST_CODE_PICK_IMAGE) {
-                addMessage("📸 사진 첨부됨: " + uri, ChatMessage.TYPE_BOT);
-            } else if (requestCode == REQUEST_CODE_PICK_AUDIO) {
-                addMessage("🎤 오디오 첨부됨: " + uri, ChatMessage.TYPE_BOT);
-            }
+            Uri uri = data.getData();
+            String type = requestCode == REQUEST_CODE_PICK_IMAGE ? "image" : "audio";
+            uploadFileToServer(uri, type);
         }
+    }
+
+    private void uploadFileToServer(Uri uri, String type) {
+        // 파일을 사용자 메시지로 먼저 표시
+        if (type.equals("image")) {
+            addFileMessage("", ChatMessage.TYPE_USER_IMAGE, uri.toString());
+        } else {
+            addFileMessage("🎤 오디오 파일", ChatMessage.TYPE_USER_AUDIO, uri.toString());
+        }
+
+        try {
+            String fileName = "upload." + (type.equals("image") ? "jpg" : "mp3");
+
+            InputStream inputStream = getContentResolver().openInputStream(uri);
+            if (inputStream == null) {
+                addMessage("❗파일 열기 실패", ChatMessage.TYPE_BOT);
+                return;
+            }
+
+            RequestBody fileBody = new RequestBody() {
+                @Override
+                public MediaType contentType() {
+                    return MediaType.parse(type + "/*");
+                }
+
+                @Override
+                public void writeTo(okio.BufferedSink sink) throws IOException {
+                    byte[] buffer = new byte[8192];
+                    int bytesRead;
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        sink.write(buffer, 0, bytesRead);
+                    }
+                    inputStream.close();
+                }
+            };
+
+            MultipartBody requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("file", fileName, fileBody)
+                    .build();
+
+            String url = "http://10.0.2.2:3000/api/chat/sessions/" + sessionId + "/evidence";
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(requestBody)
+                    .build();
+
+            OkHttpClient client = new OkHttpClient();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    runOnUiThread(() -> addMessage("❗파일 업로드 실패", ChatMessage.TYPE_BOT));
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String responseBody = response.body().string();
+
+                    if (response.isSuccessful()) {
+                        try {
+                            JSONObject result = new JSONObject(responseBody);
+                            latestEvidenceId = result.getInt("evidence_id");
+                        } catch (JSONException e) {
+                            // JSON 파싱 실패 시 무시
+                        }
+
+                        runOnUiThread(() -> {
+                            runStateTransitionFlowWithSystemEvent("file_uploaded");
+                        });
+                    } else {
+                        runOnUiThread(() -> addMessage("❗파일 업로드 실패: " + response.code(), ChatMessage.TYPE_BOT));
+                    }
+                }
+            });
+
+        } catch (Exception e) {
+            addMessage("❗업로드 중 오류 발생", ChatMessage.TYPE_BOT);
+        }
+    }
+
+    private void runStateTransitionFlowWithSystemEvent(String systemEvent) {
+        if (sessionId == -1) return;
+
+        OkHttpClient client = new OkHttpClient();
+        String url = "http://10.0.2.2:3000/api/chat/state/next?currentState=" + currentState + "&systemEvent=" + systemEvent;
+
+        Request request = new Request.Builder().url(url).get().build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(() -> addMessage("❗상태 전이 실패", ChatMessage.TYPE_BOT));
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+
+                if (!response.isSuccessful()) {
+                    runOnUiThread(() -> addMessage("❗서버 오류: " + response.code(), ChatMessage.TYPE_BOT));
+                    return;
+                }
+
+                try {
+                    JSONObject json = new JSONObject(responseBody);
+                    String nextState = json.optString("nextState", null);
+
+                    if (nextState == null || nextState.equals("null")) {
+                        runOnUiThread(() -> addMessage("❗상태 전이 규칙을 찾을 수 없습니다", ChatMessage.TYPE_BOT));
+                        return;
+                    }
+
+                    updateSessionState(nextState);
+                } catch (JSONException e) {
+                    runOnUiThread(() -> addMessage("❗전이 응답 오류", ChatMessage.TYPE_BOT));
+                }
+            }
+        });
+    }
+
+    // OCR 실행 메서드 - 자동 분석 로직 포함
+    private void runOCROnLatestEvidence() {
+        if (latestEvidenceId == -1) {
+            addMessage("❗증거 파일을 찾을 수 없습니다", ChatMessage.TYPE_BOT);
+            return;
+        }
+
+        OkHttpClient client = new OkHttpClient();
+        String url = "http://10.0.2.2:3000/api/chat/evidence/" + latestEvidenceId + "/ocr";
+
+        Request request = new Request.Builder()
+                .url(url)
+                .put(RequestBody.create("", MediaType.parse("application/json")))
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(() -> {
+                    addMessage("❗OCR 실행 실패", ChatMessage.TYPE_BOT);
+                    runStateTransitionFlowWithSystemEvent("ocr_fail");
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+
+                runOnUiThread(() -> {
+                    if (response.isSuccessful()) {
+                        try {
+                            JSONObject result = new JSONObject(responseBody);
+                            String ocrText = result.optString("ocr_text", "");
+
+                            if (!ocrText.isEmpty()) {
+                                // OCR 성공 시 자동으로 OCR 텍스트 분석 실행
+                                analyzeOCRText(latestEvidenceId, () -> {
+                                    Log.d("ChatActivity", "OCR 텍스트 자동 분석 완료");
+                                    runStateTransitionFlowWithSystemEvent("ocr_success");
+                                });
+                            } else {
+                                runStateTransitionFlowWithSystemEvent("ocr_fail");
+                            }
+                        } catch (JSONException e) {
+                            addMessage("❗OCR 응답 파싱 실패", ChatMessage.TYPE_BOT);
+                            runStateTransitionFlowWithSystemEvent("ocr_fail");
+                        }
+                    } else {
+                        addMessage("❗OCR 실행 실패: " + response.code(), ChatMessage.TYPE_BOT);
+                        runStateTransitionFlowWithSystemEvent("ocr_fail");
+                    }
+                });
+            }
+        });
     }
 }

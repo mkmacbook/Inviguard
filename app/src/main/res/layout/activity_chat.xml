@@ -46,7 +46,7 @@
         android:padding="8dp"
         android:clipToPadding="false"
         android:paddingTop="16dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="40dp"
         android:contentDescription="채팅 메시지 목록"
         android:background="@color/black_primary"
         app:layout_constraintTop_toBottomOf="@id/logo"

@@ -1,13 +1,17 @@
 package com.example.inviguard;
 
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
-
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -15,7 +19,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<ChatMessage> messageList;
 
-    // 🔹 버튼 클릭 리스너 인터페이스
+    // 🔹 단일 버튼 클릭 리스너
     public interface OnButtonClickListener {
         void onButtonClicked(String buttonText);
     }
@@ -24,6 +28,17 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void setOnButtonClickListener(OnButtonClickListener listener) {
         this.buttonClickListener = listener;
+    }
+
+    // 🔹 파일 첨부 버튼 리스너
+    public interface OnFilePickRequestedListener {
+        void onFilePickRequested(String type); // "image" or "audio"
+    }
+
+    private OnFilePickRequestedListener filePickListener;
+
+    public void setOnFilePickRequestedListener(OnFilePickRequestedListener listener) {
+        this.filePickListener = listener;
     }
 
     public ChatAdapter(List<ChatMessage> messageList) {
@@ -48,8 +63,19 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else if (viewType == ChatMessage.TYPE_BUTTON) {
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_item_button, parent, false);
             return new ButtonViewHolder(view);
+        } else if (viewType == ChatMessage.TYPE_FILE_BUTTONS) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_item_file_buttons, parent, false);
+            return new FileButtonViewHolder(view);
+        } else if (viewType == ChatMessage.TYPE_USER_IMAGE) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_item_user_image, parent, false);
+            return new UserImageViewHolder(view);
+        } else if (viewType == ChatMessage.TYPE_USER_AUDIO) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_item_user_audio, parent, false);
+            return new UserAudioViewHolder(view);
+        }  else if (viewType == ChatMessage.TYPE_REVIEW_OPTIONS) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_item_review_options, parent, false);
+            return new ReviewOptionsViewHolder(view);
         } else if (viewType == ChatMessage.TYPE_SPACER) {
-            // ✅ SpacerViewHolder 생성
             View spacerView = new View(parent.getContext());
             int heightInPx = (int) (32 * parent.getContext().getResources().getDisplayMetrics().density); // 32dp
             spacerView.setLayoutParams(new ViewGroup.LayoutParams(
@@ -72,17 +98,20 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ((BotViewHolder) holder).textView.setText(message.getMessage());
         } else if (holder instanceof ButtonViewHolder) {
             ((ButtonViewHolder) holder).button.setText(message.getMessage());
-
-            ((ButtonViewHolder) holder).button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (buttonClickListener != null) {
-                        buttonClickListener.onButtonClicked(message.getMessage());
-                    }
+            ((ButtonViewHolder) holder).button.setOnClickListener(v -> {
+                if (buttonClickListener != null) {
+                    buttonClickListener.onButtonClicked(message.getMessage());
                 }
             });
+        } else if (holder instanceof FileButtonViewHolder) {
+            ((FileButtonViewHolder) holder).bind();
+        } else if (holder instanceof UserImageViewHolder) { // 이미지 바인딩
+            ((UserImageViewHolder) holder).bind(message);
+        } else if (holder instanceof UserAudioViewHolder) { // 오디오 바인딩
+            ((UserAudioViewHolder) holder).bind(message);
+        } else if (holder instanceof ReviewOptionsViewHolder) {
+            ((ReviewOptionsViewHolder) holder).bind(buttonClickListener);
         }
-        // ❗ SpacerViewHolder는 바인딩 처리 없음
     }
 
     @Override
@@ -110,7 +139,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    // 🔸 버튼 메시지 ViewHolder
+    // 🔸 단일 버튼 메시지 ViewHolder
     static class ButtonViewHolder extends RecyclerView.ViewHolder {
         TextView button;
 
@@ -120,7 +149,87 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    // 🔸 Spacer 메시지 ViewHolder (빈 공간용)
+    // 🔸 파일 첨부 버튼 ViewHolder
+    class FileButtonViewHolder extends RecyclerView.ViewHolder {
+        Button buttonImage, buttonAudio;
+
+        FileButtonViewHolder(View itemView) {
+            super(itemView);
+            buttonImage = itemView.findViewById(R.id.button_image);
+            buttonAudio = itemView.findViewById(R.id.button_audio);
+        }
+
+        void bind() {
+            buttonImage.setOnClickListener(v -> {
+                if (filePickListener != null) filePickListener.onFilePickRequested("image");
+            });
+            buttonAudio.setOnClickListener(v -> {
+                if (filePickListener != null) filePickListener.onFilePickRequested("audio");
+            });
+        }
+    }
+
+    // 🔸 분석 전 옵션 선택 ViewHolder
+    static class ReviewOptionsViewHolder extends RecyclerView.ViewHolder {
+        Button btnStartEval, btnAddDesc, btnAddEvidence;
+
+        ReviewOptionsViewHolder(View itemView) {
+            super(itemView);
+            btnStartEval = itemView.findViewById(R.id.button_start_evaluation);
+            btnAddDesc = itemView.findViewById(R.id.button_additional_description);
+            btnAddEvidence = itemView.findViewById(R.id.button_additional_evidence);
+        }
+
+        void bind(OnButtonClickListener listener) {
+            btnStartEval.setOnClickListener(v -> {
+                if (listener != null) listener.onButtonClicked("분석 시작하기");
+            });
+            btnAddDesc.setOnClickListener(v -> {
+                if (listener != null) listener.onButtonClicked("상황 설명 추가로 입력하기");
+            });
+            btnAddEvidence.setOnClickListener(v -> {
+                if (listener != null) listener.onButtonClicked("사진·음성 증거 더 추가하기");
+            });
+        }
+    }
+
+    // 사용자 이미지 메시지 ViewHolder
+    static class UserImageViewHolder extends RecyclerView.ViewHolder {
+        ImageView imageView;
+
+        UserImageViewHolder(View itemView) {
+            super(itemView);
+            imageView = itemView.findViewById(R.id.image_message);
+        }
+
+        void bind(ChatMessage message) {
+            if (message.getFileUri() != null) {
+                // Glide를 사용해서 이미지 로드 (둥근 모서리 적용)
+                Glide.with(itemView.getContext())
+                        .load(Uri.parse(message.getFileUri()))
+                        .centerCrop()
+                        .transform(new RoundedCorners(24)) // 둥근 모서리 적용 (24dp)
+                        .into(imageView);
+            }
+        }
+
+    }
+
+    // 사용자 오디오 메시지 ViewHolder
+    static class UserAudioViewHolder extends RecyclerView.ViewHolder {
+        TextView textView;
+
+        UserAudioViewHolder(View itemView) {
+            super(itemView);
+            textView = itemView.findViewById(R.id.text_message);
+        }
+
+        void bind(ChatMessage message) {
+            textView.setText(message.getMessage());
+        }
+    }
+
+    // 🔸 Spacer ViewHolder
     static class SpacerViewHolder extends RecyclerView.ViewHolder {
         SpacerViewHolder(View itemView) {
             super(itemView);

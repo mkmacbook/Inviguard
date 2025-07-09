@@ -5,331 +5,293 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- 상단바 (뒤로가기, 로고, 유저 아이콘) -->
-    <ImageView
-        android:id="@+id/back"
-        android:layout_width="0dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:src="@drawable/left"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageView
-        android:id="@+id/logo"
-        android:layout_width="100dp"
-        android:layout_height="24dp"
-        android:layout_marginTop="16dp"
-        android:src="@drawable/watermark_logo_white"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <ImageView
-        android:id="@+id/user"
-        android:layout_width="0dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
-        android:src="@drawable/user"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-
-    <!-- "분석 결과" 텍스트 -->
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_y17"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.17" />
-
-    <TextView
-        android:id="@+id/text_result"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="분석 결과"
-        android:textSize="24sp"
-        android:fontFamily="@font/roboto_semibold"
-        android:textColor="@color/text_primary"
-        app:layout_constraintTop_toTopOf="@id/guideline_y17"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-
-    <!-- 분석 요약 (유사 사례 O/X) 텍스트 -->
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_y23"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.23" />
-
-    <TextView
-        android:id="@+id/text_result_summary"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="유사한 괴롭힘 사례가 확인되었어요."
-        android:textSize="18sp"
-        android:fontFamily="@font/roboto_medium"
-        android:textColor="@color/text_primary"
-        app:layout_constraintTop_toTopOf="@id/guideline_y23"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-
-    <!-- SNS 채팅 사진 박스 1 -->
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_y30"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.30" />
-
+    <!-- 상단바 (고정) -->
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/box_photo"
-        android:layout_width="328dp"
-        android:layout_height="125dp"
-        android:background="@drawable/bg_rounded_surface"
-        app:layout_constraintTop_toTopOf="@id/guideline_y30"
+        android:id="@+id/top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- SNS 채팅 사진 (임시 초기 텍스트) -->
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_example1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.12" />
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/left"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
-        <TextView
-            android:id="@+id/text_example1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="SNS 채팅 사진"
-            android:textSize="16sp"
-            android:fontFamily="@font/roboto_semibold"
-            android:textColor="@color/text_primary"
-            app:layout_constraintTop_toTopOf="@id/guideline_example1"
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="100dp"
+            android:layout_height="24dp"
+            android:src="@drawable/watermark_logo_white"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="25dp" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- 상세 내용 (임시 초기 텍스트) -->
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_example2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.37" />
+        <ImageView
+            android:id="@+id/user"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/user"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-        <TextView
-            android:id="@+id/text_example2_item1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="- 모욕적 언행이 담긴 채팅"
-            android:textSize="14sp"
-            android:fontFamily="@font/roboto_medium"
-            android:textColor="@color/text_primary"
-            android:lineHeight="20dp"
-            android:layout_marginStart="25dp"
-            app:layout_constraintTop_toTopOf="@id/guideline_example2"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <TextView
-            android:id="@+id/text_example2_item2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="- 부당한 요구가 담긴 채팅"
-            android:textSize="14sp"
-            android:fontFamily="@font/roboto_medium"
-            android:textColor="@color/text_primary"
-            android:lineHeight="20dp"
-            android:layout_marginStart="25dp"
-            android:layout_marginTop="3dp"
-            app:layout_constraintTop_toBottomOf="@id/text_example2_item1"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <TextView
-            android:id="@+id/text_example2_item3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="- 업무 시간 외 지속적으로 연락이 온 내역"
-            android:textSize="14sp"
-            android:fontFamily="@font/roboto_medium"
-            android:textColor="@color/text_primary"
-            android:lineHeight="20dp"
-            android:layout_marginStart="25dp"
-            android:layout_marginTop="3dp"
-            app:layout_constraintTop_toBottomOf="@id/text_example2_item2"
-            app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-
-    <!-- 음성 녹음 파일 박스 2 -->
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_y48"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.48" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/box_voice"
-        android:layout_width="328dp"
-        android:layout_height="105dp"
-        android:background="@drawable/bg_rounded_surface"
-        app:layout_constraintTop_toTopOf="@id/guideline_y48"
+    <!-- 스크롤 가능 영역 -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/top_bar"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- 음성 녹음 파일 (임시 초기 텍스트) -->
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_example3"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.15" />
+            android:paddingBottom="32dp">
 
-        <TextView
-            android:id="@+id/text_example3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="음성 녹음 파일"
-            android:textSize="16sp"
-            android:fontFamily="@font/roboto_semibold"
-            android:textColor="@color/text_primary"
-            app:layout_constraintTop_toTopOf="@id/guideline_example3"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="25dp" />
+            <!-- 미모티콘 -->
+            <ImageView
+                android:id="@+id/result_img1"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="20dp"
+                android:src="@drawable/result_img1"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- 상세 내용 (임시 초기 텍스트) -->
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_example4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.45" />
+            <!-- risk_score 텍스트 -->
+            <TextView
+                android:id="@+id/risk_score"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0점"
+                android:textSize="40sp"
+                android:layout_marginTop="-5dp"
+                android:fontFamily="@font/roboto_semibold"
+                app:layout_constraintTop_toBottomOf="@id/result_img1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        <TextView
-            android:id="@+id/text_example4_item1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="- 업무 외 시간에 지속적 업무 지시"
-            android:textSize="14sp"
-            android:fontFamily="@font/roboto_medium"
-            android:textColor="@color/text_primary"
-            android:lineHeight="20dp"
-            android:layout_marginStart="25dp"
-            app:layout_constraintTop_toTopOf="@id/guideline_example4"
-            app:layout_constraintStart_toStartOf="parent" />
+            <!-- 스코어 아래 텍스트 -->
+            <TextView
+                android:id="@+id/risk_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="이건 혼자 참을 일이 아니에요"
+                android:textSize="16sp"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/roboto_regular"
+                android:textColor="@color/text_primary"
+                app:layout_constraintTop_toBottomOf="@id/risk_score"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- 분리된 두 번째 항목: 위에 8dp 간격 -->
-        <TextView
-            android:id="@+id/text_example4_item2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="- 개인 시간 침해, 팀 내 경고 조치"
-            android:textSize="14sp"
-            android:fontFamily="@font/roboto_medium"
-            android:textColor="@color/text_primary"
-            android:lineHeight="20dp"
-            android:layout_marginStart="25dp"
-            android:layout_marginTop="5dp"
-            app:layout_constraintTop_toBottomOf="@id/text_example4_item1"
-            app:layout_constraintStart_toStartOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <!-- -1, 0, 1 위험도 등급 박스 -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/risk_level_box"
+                android:layout_width="328dp"
+                android:layout_height="96dp"
+                android:layout_marginTop="30dp"
+                android:paddingStart="25dp"
+                android:paddingTop="20dp"
+                android:paddingEnd="25dp"
+                android:paddingBottom="18dp"
+                android:background="@drawable/bg_rounded_surface"
+                app:layout_constraintTop_toBottomOf="@id/risk_text"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <!-- 명백한 괴롭힘 -->
+                <TextView
+                    android:id="@+id/risk_level1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🔴 명백한 괴롭힘"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/roboto_semibold"
+                    android:textColor="@color/text_primary"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <TextView
+                    android:id="@+id/risk_level1_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="5dp"
+                    android:text="·  AI 분석 점수 : "
+                    android:textSize="16sp"
+                    android:fontFamily="@font/roboto_medium"
+                    android:textColor="@color/text_primary"
+                    android:lineHeight="20dp"
+                    app:layout_constraintTop_toBottomOf="@id/risk_level1"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- 괴롭힘 유형 types -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/risk_types_box"
+                android:layout_width="328dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:paddingStart="25dp"
+                android:paddingTop="20dp"
+                android:paddingEnd="25dp"
+                android:paddingBottom="18dp"
+                android:background="@drawable/bg_rounded_surface"
+                app:layout_constraintTop_toBottomOf="@id/risk_level_box"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <!-- 괴롭힘 유형 -->
+                <TextView
+                    android:id="@+id/risk_types"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🔍 괴롭힘 유형"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/roboto_semibold"
+                    android:textColor="@color/text_primary"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <LinearLayout
+                    android:id="@+id/risk_types_texts"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="5dp"
+                    app:layout_constraintTop_toBottomOf="@id/risk_types"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    <!-- 상세 내용 (임시 초기 텍스트) -->
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_y65"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.65" />
+            <!-- 이음 위로 메시지 박스 -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/ieum_message_box"
+                android:layout_width="328dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="18dp"
+                android:paddingStart="25dp"
+                android:paddingTop="20dp"
+                android:paddingEnd="25dp"
+                android:paddingBottom="18dp"
+                android:background="@drawable/bg_rounded_surface"
+                app:layout_constraintTop_toBottomOf="@id/risk_types_box"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
-    <TextView
-        android:id="@+id/text_result_notify"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="이와 유사한 사례에는 신고가 이루어진 경우가 많습니다.\n지금 바로 신고를 진행하는 걸 추천드려요."
-        android:textSize="12sp"
-        android:fontFamily="@font/roboto_light"
-        android:textColor="@color/text_primary"
-        android:gravity="center"
-        android:lineHeight="20dp"
-        app:layout_constraintTop_toTopOf="@id/guideline_y65"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+                <!-- 이음의 위로 메시지 -->
+                <TextView
+                    android:id="@+id/ieum_message"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🫂 이음의 위로 메시지"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/roboto_semibold"
+                    android:textColor="@color/text_primary"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <TextView
+                    android:id="@+id/ieum_message_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="지금 느끼는 감정은 절대 혼자 감당할 일이 아니에요. 도움을 요청하는 건 용기 있는 행동이고, 당신이 더 안전하고 편안할 수 있도록 함께할게요. 절대 잘못한 게 아니니 꼭 도움받으세요."
+                    android:textSize="16sp"
+                    android:fontFamily="@font/roboto_regular"
+                    android:textColor="@color/text_primary"
+                    android:lineHeight="20dp"
+                    app:layout_constraintTop_toBottomOf="@id/ieum_message"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    <!-- 신고 진행하기 버튼 -->
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_y76"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.765" />
+            <!-- 안내 텍스트 -->
+            <TextView
+                android:id="@+id/text_result_notify"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:text="더 이상 혼자 고민하지 마세요, 지금 바로 신고하세요."
+                android:textSize="12sp"
+                android:fontFamily="@font/roboto_light"
+                android:textColor="@color/text_primary"
+                android:gravity="center"
+                android:lineHeight="20dp"
+                app:layout_constraintTop_toBottomOf="@id/ieum_message_box"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/button_report"
-            android:layout_width="328dp"
-            android:layout_height="41dp"
-            android:text="신고 진행하기"
-            android:textColor="#000000"
-            android:fontFamily="@font/roboto_semibold"
-            android:textSize="16sp"
-            android:background="@drawable/gradient_button"
-            app:layout_constraintTop_toTopOf="@id/guideline_y76"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:ignore="TouchTargetSizeCheck"/>
+            <!-- 신고 진행하기 버튼 -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/button_report"
+                android:layout_width="328dp"
+                android:layout_height="41dp"
+                android:layout_marginTop="50dp"
+                android:text="신고 진행하기"
+                android:textColor="#000000"
+                android:fontFamily="@font/roboto_semibold"
+                android:textSize="16sp"
+                android:background="@drawable/gradient_button"
+                app:layout_constraintTop_toBottomOf="@id/text_result_notify"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:ignore="TouchTargetSizeCheck"/>
 
-    <!-- 증거 추가 제출하기 버튼 -->
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_y83"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.838" />
+            <!-- 증거 추가 제출하기 버튼 -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/button_additional"
+                android:layout_width="328dp"
+                android:layout_height="41dp"
+                android:layout_marginTop="12dp"
+                android:text="증거 추가 제출하기"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                android:fontFamily="@font/roboto_semibold"
+                android:background="@drawable/gradient_stroke_rounded"
+                app:layout_constraintTop_toBottomOf="@id/button_report"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:ignore="TouchTargetSizeCheck"/>
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/button_additional"
-            android:layout_width="328dp"
-            android:layout_height="41dp"
-            android:text="증거 추가 제출하기"
-            android:textColor="@color/text_primary"
-            android:textSize="16sp"
-            android:fontFamily="@font/roboto_semibold"
-            android:background="@drawable/gradient_stroke_rounded"
-            app:layout_constraintTop_toTopOf="@id/guideline_y83"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:ignore="TouchTargetSizeCheck"/>
+            <!-- 메인으로 버튼 -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/button_main"
+                android:layout_width="328dp"
+                android:layout_height="41dp"
+                android:layout_marginTop="12dp"
+                android:text="메인으로"
+                android:textColor="@color/text_primary"
+                android:fontFamily="@font/roboto_semibold"
+                android:textSize="16sp"
+                android:background="@drawable/gradient_stroke_rounded"
+                app:layout_constraintTop_toBottomOf="@id/button_additional"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:ignore="TouchTargetSizeCheck"/>
 
-    <!-- 메인으로 버튼 -->
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_y91"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.91" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/button_main"
-            android:layout_width="328dp"
-            android:layout_height="41dp"
-            android:text="메인으로"
-            android:textColor="@color/text_primary"
-            android:fontFamily="@font/roboto_semibold"
-            android:textSize="16sp"
-            android:background="@drawable/gradient_stroke_rounded"
-            app:layout_constraintTop_toTopOf="@id/guideline_y91"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:ignore="TouchTargetSizeCheck"/>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
